@@ -252,6 +252,24 @@
 return t ? e.url += "?sign=".concat(n) : e.params.sign = n,
 ```
 
+### 2024-05-03
+
+- B站首页的逆向爬取
+
+- 这里需要逆向的参数只有w_rid，这里还需要注意dm_img_list、dm_img_str、dm_cover_img_str、dm_img_inter这四个参数。
+
+- dm_img_list：里面记录的是鼠标轨迹，可以固定
+
+- dm_img_str：取的WebGL的版本，可以固定
+
+- dm_cover_img_str：取的显卡信息进行加密，可以固定
+
+- dm_img_inter：推测是取浏览器里面的环境进行加密，这个也可以固定
+
+- w_rid是md5加密，这里我直接调用库解决
+
+- 这里请求次数多了会出现-352错误，显示风控校验失败。我这里也没测试哪个参数会和风控校验有关
+
 # 未解决
 
 - [ ] **巨量算数中返回值加密data未进行解密**
