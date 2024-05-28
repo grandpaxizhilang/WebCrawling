@@ -302,6 +302,18 @@ return t ? e.url += "?sign=".concat(n) : e.params.sign = n,
 
 - 后续我将会依照这个代码逻辑去使用Scrapy框架再实现这个B站评论区的爬取，发挥Scrapy框架的优点
 
+### 2024-05-28
+
+- 携程的逆向分析
+
+- 这里有首页数据和评论的url，一共有三个参数
+
+- 爬取首页数据需要的参数有_fxpcqlniredt和x-traceID。_fxpcqlniredt是cookie中的一个参数，x-traceID是_fxpcqlniredt、时间戳、一个随机生成的字符串组合而成
+
+- 爬取评论区需要的参数是textab。这个会遇到vmp，这里我还是用补环境的方法去过这个vmp。这里的检测点和小红书的检测有点相似，全部补上即可。这里的vmp还是动态的，需要请求接口去返回动态js
+
+
+
 # 未解决
 
 - [ ] **巨量算数中返回值加密data未进行解密**
