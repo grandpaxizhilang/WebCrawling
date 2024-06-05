@@ -320,6 +320,15 @@ return t ? e.url += "?sign=".concat(n) : e.params.sign = n,
 
 - xm-sign由一个md5加密字符串和随机生成的数字和时间戳组成
 
+### 2024-06-05
+
+- 基于websocket实现实时连接B站直播并获取弹幕
+- 这里连接服务器时需要发送鉴权包，这个鉴权包是以二进制数据进行传输的。这个二进制数据转换前是一个json数据，里面包含了直播间的id，自己账户的uid，还有token（这里token我看B站直播信息流中说明这个token可以不携带）等等
+- 服务器返回的数据也是一个二进制数据，需要自己转换。转换后就是一个json数据，按自己需求进行获取需要的内容。这里我只获取了有关弹幕的信息
+- 相关信息可以查完下面的文档
+
+B站直播信息流文档：https://socialsisteryi.github.io/bilibili-API-collect/docs/live/message_stream.html
+
 # 未解决
 
 - [ ] **巨量算数中返回值加密data未进行解密**
