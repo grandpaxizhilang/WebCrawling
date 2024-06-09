@@ -204,6 +204,8 @@
 
 - 瑞数四代逆向分析
 
+- 网站:`aHR0cDovL3d3dy5mYW5nZGkuY29tLmNuL25ld19ob3VzZS9uZXdfaG91c2UuaHRtbA==`
+
 - 初识瑞数四代，一开始还是有点无从下手，查阅相关的博客才了解瑞数四的基本流程，发现和加速乐很相似
 
 - 瑞数四网站的基本发包流程：第一次访问页面（返回202和cookie_S）->获取js，解密生成cookie_T->第二次带上cookie访问页面（返回200和内容）
@@ -322,12 +324,20 @@ return t ? e.url += "?sign=".concat(n) : e.params.sign = n,
 
 ### 2024-06-05
 
-- 基于websocket实现实时连接B站直播并获取弹幕
+- 基于websocket实现实时长连接B站直播并获取弹幕
 - 这里连接服务器时需要发送鉴权包，这个鉴权包是以二进制数据进行传输的。这个二进制数据转换前是一个json数据，里面包含了直播间的id，自己账户的uid，还有token（这里token我看B站直播信息流中说明这个token可以不携带）等等
 - 服务器返回的数据也是一个二进制数据，需要自己转换。转换后就是一个json数据，按自己需求进行获取需要的内容。这里我只获取了有关弹幕的信息
+- 这里不知道为什么获取弹幕时，会有部分弹幕获取不到。如果有大佬知道如何解决，希望您能与我沟通，谢谢
 - 相关信息可以查完下面的文档
 
 B站直播信息流文档：https://socialsisteryi.github.io/bilibili-API-collect/docs/live/message_stream.html
+
+### 2024-06-09
+
+- 瑞数五代逆向分析
+- 网站：`aHR0cDovL3d3dy5uaGMuZ292LmNuL3dqdy9nZnh3amovbGlzdC5zaHRtbA==`
+- 瑞数5和瑞数4整体流程基本都是一样的，只是比瑞数4多了一些环境检测。所以这里可以直接用瑞数4的代码进行修改运行即可
+- 这里会出现一个生成出来的cookie长度不一样的问题。因为在网站中会有取 window.localStorage里面的某些值进行计算的步骤，这些值就是取浏览器 canvas 等指纹生成的，指纹随机就能并发，通常访问单独的一个 html 页面是不校验指纹的，生成的短 cookie 就能通过。如果短的cookie请求没有返回数据，那么就是有些必要的环境没有补上
 
 # 未解决
 
