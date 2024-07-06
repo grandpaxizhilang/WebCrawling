@@ -339,11 +339,17 @@ B站直播信息流文档：https://socialsisteryi.github.io/bilibili-API-collec
 - 瑞数5和瑞数4整体流程基本都是一样的，只是比瑞数4多了一些环境检测。所以这里可以直接用瑞数4的代码进行修改运行即可
 - 这里会出现一个生成出来的cookie长度不一样的问题。因为在网站中会有取 window.localStorage里面的某些值进行计算的步骤，这些值就是取浏览器 canvas 等指纹生成的，指纹随机就能并发，通常访问单独的一个 html 页面是不校验指纹的，生成的短 cookie 就能通过。如果短的cookie请求没有返回数据，那么就是有些必要的环境没有补上
 
+### 2024-07-06
+
+- 完成抖音的a_bogus参数逆向
+- 这里排查了一下问题，其实之前补的环境没有错误，主要是没有登入后的cookie。直接请求能够成功，但是不会返回数据
+- 环境检测不多，重点是有关window、screen和document.body的相关长度全都给补了。还有_sdkGlueVersionMap、onwheelx和xmst全都给补上去。再把一些常见的环境检测补上去，这个参数就是正确的了
+
 # 未解决
 
 - [ ] **巨量算数中返回值加密data未进行解密**
 
-- [ ] **抖音的a_bogus参数逆向**
+- [x] **抖音的a_bogus参数逆向**
 
 - [ ] **boss直聘的cookie中的__zp_token__**
 

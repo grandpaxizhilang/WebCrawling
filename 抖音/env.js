@@ -53,12 +53,13 @@ catchvm.proxy = function(o){
     if(catchvm.memory.config.proxy == false){return o};
     return new Proxy(o, {
         set(target, property, value){
-
-            console.table([{"方法":"set-->",'调用者':target,"类型":property,'值':value}]);
+            if(property !== 'chl'){
+                console.table([{"方法":"set-->",'调用者':target,"类型":property,'值':value}]);
+            }
             return Reflect.set(...arguments);
         },
         get(target, property, receiver){
-            if(property !== 'Math' && property !== 'undefined' && property !== "isNaN"){
+            if( property !== 'Math' && property !== 'undefined' && property !== "isNaN" && property !== 'Number' && property !== 'encodeURI' && property !== 'parseFloat' && property !== 'decodeURI' && property !== 'MSSelection' && property !== 'SVGAngle' && property !== 'Position' && property !== 'MSEventObj' && property !== 'Object' && property !== 'MSSelection' && property !== 'MessageEvent' && property !== 'SVGPointList' && property !== 'SVGAElement' && property !== 'VBArray' && property !== 'TextMetrics' && property !== 'DOMException' && property !== 'SVGZoomEvent' && property !== 'StyleSheet' && property !== 'CSSPageRule' && property !== 'CSSStyleRule' && property !== 'CSSRuleList' && property !== 'CSSMediaRule' && property !== 'CSSMediaRule' && property !== 'TimeRanges' ){
                 console.table([{"方法":"get<--",'调用者':target,"类型":property,'值':target[property]}]);
             }
             return target[property];
@@ -99,6 +100,7 @@ Object.defineProperties(EventTarget.prototype, {
 ///////////////////////////////////////////////////////////////
 
 EventTarget.prototype.addEventListener = function addEventListener(type,listener){
+    console.log(arguments)
     // debugger;
     if(catchvm.memory.listeners[type] === undefined){
         catchvm.memory.listeners[type] = [];
@@ -134,15 +136,13 @@ EventTarget.prototype.removeEventListener = function removeEventListener(type,ca
     }
 };catchvm.func_set_natvie(EventTarget.prototype.removeEventListener);
 
-
-
-
 ///////////////////////////////////////////////////////////////
 
 
 //此接口待开发，目前不会实现
 
 var DOMException = function DOMException(message){
+    console.log('使用了  DOMException('+message+')')
     var dOMException = new Error(message)
     dOMException.name = 'DOMException'
     return dOMException
@@ -183,15 +183,6 @@ Event.prototype.CAPTURING_PHASE = 1;
 Event.prototype.NONE = 1;
 
 
-
-for (let temp in Event.prototype) {
-    if(!(typeof Event.prototype[temp] === 'function') && temp.toLowerCase() === temp){
-        Event.prototype.__defineGetter__(temp, function () {
-            throw new TypeError("Illegal invocation");
-        });
-    }
-}
-
 ///////////////////////////////////////////////////////////////
 
 catchvm.memory.Events['event'] = function(type){
@@ -214,6 +205,35 @@ catchvm.memory.Events['event'] = function(type){
 catchvm.memory.Events['events'] = function(type){
     return catchvm.memory.Events['event'](type);
 };
+
+
+
+///////////////////////////////////////////////////////////////
+Event.prototype.__defineGetter__("type",function(){
+    throw TypeError("Illegal invocation")
+})
+Event.prototype.__defineGetter__("bubbles",function(){
+    throw TypeError("Illegal invocation")
+})
+Event.prototype.__defineGetter__("cancelable",function(){
+    throw TypeError("Illegal invocation")
+})
+Event.prototype.__defineGetter__("composed",function(){
+    throw TypeError("Illegal invocation")
+})
+Event.prototype.__defineGetter__("AT_TARGET",function(){
+    throw TypeError("Illegal invocation")
+})
+Event.prototype.__defineGetter__("BUBBLING_PHASE",function(){
+    throw TypeError("Illegal invocation")
+})
+Event.prototype.__defineGetter__("CAPTURING_PHASE",function(){
+    throw TypeError("Illegal invocation")
+})
+Event.prototype.__defineGetter__("NONE",function(){
+    throw TypeError("Illegal invocation")
+})
+
 
 var UIEvent = function UIEvent(type){
     return catchvm.memory.Events['uievent'](type);
@@ -278,10 +298,10 @@ TextMetrics.prototype.ideographicBaseline = '';
 
 ///////////////////////////////////////////////////////////////
 
-var textMetrics = {};
-textMetrics.__proto__ = TextMetrics.prototype;
+catchvm.memory.textMetrics = {};
+catchvm.memory.textMetrics.__proto__ = TextMetrics.prototype;
 
-textMetrics = catchvm.proxy(textMetrics);
+catchvm.memory.textMetrics = catchvm.proxy(catchvm.memory.textMetrics);
 var CanvasRenderingContext2D = function CanvasRenderingContext2D(){
     throw new TypeError("Illegal constructor");
 };catchvm.func_set_natvie(CanvasRenderingContext2D)
@@ -295,7 +315,7 @@ Object.defineProperties(CanvasRenderingContext2D.prototype, {
 
 CanvasRenderingContext2D.prototype.measureText = function measureText(text){
     debugger;
-    return textMetrics;
+    return catchvm.memory.textMetrics;
 };catchvm.func_set_natvie(CanvasRenderingContext2D.prototype.measureText);
 
 CanvasRenderingContext2D.prototype.fillText = function fillText(){
@@ -357,7 +377,19 @@ catchvm.memory.Events['mouseevents'] = function(type){
     return catchvm.memory.Events['mouseevent'](type);
 };
 
-
+///////////////////////////////////////////////////////////////
+MouseEvent.prototype.__defineGetter__("screenX",function(){
+    throw TypeError("Illegal invocation")
+})
+MouseEvent.prototype.__defineGetter__("screenY",function(){
+    throw TypeError("Illegal invocation")
+})
+MouseEvent.prototype.__defineGetter__("clientX",function(){
+    throw TypeError("Illegal invocation")
+})
+MouseEvent.prototype.__defineGetter__("clientY",function(){
+    throw TypeError("Illegal invocation")
+})
 var Option = function Option(){
     debugger;
     if(catchvm.memory.HTMLElements['option'] == 'undefined'){
@@ -579,11 +611,33 @@ NetworkInformation.prototype.saveData = false
 
 
 ///////////////////////////////////////////////////////////////
+
 NetworkInformation.prototype.__proto__ = EventTarget.prototype
 
 catchvm.memory.connection = {}
+
+catchvm.memory.connection.type = 'Wifi'
+
 catchvm.memory.connection.__proto__ = NetworkInformation.prototype
 catchvm.memory.connection = catchvm.proxy(catchvm.memory.connection)
+
+
+///////////////////////////////////////////////////////////////
+NetworkInformation.prototype.__defineGetter__("downlink",function(){
+    throw TypeError("Illegal invocation")
+})
+NetworkInformation.prototype.__defineGetter__("effectiveType",function(){
+    throw TypeError("Illegal invocation")
+})
+NetworkInformation.prototype.__defineGetter__("onchange",function(){
+    throw TypeError("Illegal invocation")
+})
+NetworkInformation.prototype.__defineGetter__("rtt",function(){
+    throw TypeError("Illegal invocation")
+})
+NetworkInformation.prototype.__defineGetter__("saveData",function(){
+    throw TypeError("Illegal invocation")
+})
 var Bluetooth = function Bluetooth(){
     throw new TypeError("Illegal constructor");
 };catchvm.func_set_natvie(Bluetooth)
@@ -658,6 +712,11 @@ NavigatorManagedData.prototype.__proto__ = EventTarget.prototype
 catchvm.memory.managed = {}
 catchvm.memory.managed.__proto__ = NavigatorManagedData.prototype
 catchvm.memory.managed = catchvm.proxy(catchvm.memory.managed)
+
+///////////////////////////////////////////////////////////////
+NavigatorManagedData.prototype.__defineGetter__("onmanagedconfigurationchange",function(){
+    throw TypeError("Illegal invocation")
+})
 var StorageManager = function StorageManager(){
     throw new TypeError("Illegal constructor");
 };catchvm.func_set_natvie(StorageManager)
@@ -865,15 +924,18 @@ Object.defineProperties(Presentation.prototype, {
 Presentation.prototype.defaultRequest = null
 Presentation.prototype.receiver = null
 ///////////////////////////////////////////////////////////////
+
 catchvm.memory.presentation = {}
 catchvm.memory.presentation.__proto__ = Presentation.prototype
 catchvm.memory.presentation = catchvm.proxy(catchvm.memory.presentation)
 
-
-
-
-
-
+///////////////////////////////////////////////////////////////
+Presentation.prototype.__defineGetter__("defaultRequest",function(){
+    throw TypeError("Illegal invocation")
+})
+Presentation.prototype.__defineGetter__("receiver",function(){
+    throw TypeError("Illegal invocation")
+})
 
 var Serial = function Serial(){
     throw new TypeError("Illegal constructor");
@@ -988,13 +1050,23 @@ NavigatorUAData.prototype.mobile = false
 NavigatorUAData.prototype.platform = 'windows'
 NavigatorUAData.prototype.brands = {}
 ///////////////////////////////////////////////////////////////
+
+
 catchvm.memory.userAgentData = {}
 catchvm.memory.userAgentData.__proto__ = NavigatorUAData.prototype
 catchvm.memory.userAgentData = catchvm.proxy(catchvm.memory.userAgentData)
 
 
-
-
+///////////////////////////////////////////////////////////////
+NavigatorUAData.prototype.__defineGetter__("mobile",function(){
+    throw TypeError("Illegal invocation")
+})
+NavigatorUAData.prototype.__defineGetter__("platform",function(){
+    throw TypeError("Illegal invocation")
+})
+NavigatorUAData.prototype.__defineGetter__("brands",function(){
+    throw TypeError("Illegal invocation")
+})
 
 
 var CSSStyleDeclaration = function CSSStyleDeclaration(){
@@ -1685,13 +1757,16 @@ Object.defineProperties(HTMLAllCollection.prototype, {
 });
 ///////////////////////////////////////////////////////////////
 
-
+HTMLAllCollection.prototype.length = 0
 
 ///////////////////////////////////////////////////////////////
 
 catchvm.memory.htmlAllCollection = {}
 catchvm.memory.htmlAllCollection.__proto__ = HTMLAllCollection.prototype
 catchvm.memory.htmlAllCollection = catchvm.proxy(catchvm.memory.htmlAllCollection)
+
+///////////////////////////////////////////////////////////////
+
 
 var DOMTokenList = function DOMTokenList(){
     throw new TypeError("Illegal constructor");
@@ -1728,19 +1803,45 @@ Performance.prototype.onresourcetimingbufferfull = null
 Performance.prototype.timeOrigin = {}
 Performance.prototype.timing = {}
 
+
 Performance.prototype.now = function now(){
     return 150328.69999999925
 }
 
+Performance.prototype.getEntries = function getEntries(){
+    console.log(arguments)
+    debugger
+    return [{}]
+}
 
 
 ///////////////////////////////////////////////////////////////
 
 Performance.prototype.__proto__ = EventTarget.prototype
 
-catchvm.memory.performance = {}
-catchvm.memory.performance.__proto__ = Performance.prototype
-catchvm.memory.performance = catchvm.proxy(catchvm.memory.performance)
+performance = {}
+performance.__proto__ = Performance.prototype
+performance = catchvm.proxy(performance)
+
+///////////////////////////////////////////////////////////////
+Performance.prototype.__defineGetter__("eventCounts",function(){
+    throw TypeError("Illegal invocation")
+})
+Performance.prototype.__defineGetter__("memory",function(){
+    throw TypeError("Illegal invocation")
+})
+Performance.prototype.__defineGetter__("navigation",function(){
+    throw TypeError("Illegal invocation")
+})
+Performance.prototype.__defineGetter__("onresourcetimingbufferfull",function(){
+    throw TypeError("Illegal invocation")
+})
+Performance.prototype.__defineGetter__("timeOrigin",function(){
+    throw TypeError("Illegal invocation")
+})
+Performance.prototype.__defineGetter__("timing",function(){
+    throw TypeError("Illegal invocation")
+})
 
 
 var ScreenOrientation = function ScreenOrientation(){
@@ -1764,7 +1865,579 @@ catchvm.memory.orientation = {}
 catchvm.memory.orientation.__proto__ = ScreenOrientation.prototype
 catchvm.memory.orientation = catchvm.proxy(catchvm.memory.orientation)
 
+///////////////////////////////////////////////////////////////
+ScreenOrientation.prototype.__defineGetter__("angle",function(){
+    throw TypeError("Illegal invocation")
+})
+ScreenOrientation.prototype.__defineGetter__("onchange",function(){
+    throw TypeError("Illegal invocation")
+})
+ScreenOrientation.prototype.__defineGetter__("type",function(){
+    throw TypeError("Illegal invocation")
+})
 
+
+
+
+var CSSRule = function CSSRule(){
+    throw new TypeError("Illegal constructor");
+};catchvm.func_set_natvie(CSSRule)
+Object.defineProperties(CSSRule.prototype, {
+    [Symbol.toStringTag]: {
+        value: "CSSRule",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+CSSRule.prototype.CHARSET_RULE = 2
+CSSRule.prototype.COUNTER_STYLE_RULE = 11
+CSSRule.prototype.FONT_FACE_RULE = 5
+CSSRule.prototype.FONT_FEATURE_VALUES_RULE = 14
+CSSRule.prototype.IMPORT_RULE = 3
+CSSRule.prototype.KEYFRAMES_RULE = 7
+CSSRule.prototype.KEYFRAME_RULE = 8
+CSSRule.prototype.MEDIA_RULE = 4
+CSSRule.prototype.NAMESPACE_RULE = 16
+CSSRule.prototype.PAGE_RULE = 6
+CSSRule.prototype.STYLE_RULE = 1
+CSSRule.prototype.SUPPORTS_RULE = 12
+
+///////////////////////////////////////////////////////////////
+
+
+
+
+var CSSStyleRule = function CSSStyleRule(){
+    throw new TypeError("Illegal constructor");
+};catchvm.func_set_natvie(CSSStyleRule)
+Object.defineProperties(CSSStyleRule.prototype, {
+    [Symbol.toStringTag]: {
+        value: "CSSStyleRule",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+
+
+
+
+///////////////////////////////////////////////////////////////
+
+CSSStyleRule.prototype.__proto__ = CSSRule.prototype
+var StyleSheet = function StyleSheet(){
+    throw new TypeError("Illegal constructor");
+};catchvm.func_set_natvie(StyleSheet)
+Object.defineProperties(StyleSheet.prototype, {
+    [Symbol.toStringTag]: {
+        value: "StyleSheet",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////
+
+var CSSRuleList = function CSSRuleList(){
+    throw new TypeError("Illegal constructor");
+};catchvm.func_set_natvie(CSSRuleList)
+Object.defineProperties(CSSRuleList.prototype, {
+    [Symbol.toStringTag]: {
+        value: "CSSRuleList",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////
+
+
+var CSSGroupingRule = function CSSGroupingRule(){
+    throw new TypeError("Illegal constructor");
+};catchvm.func_set_natvie(CSSGroupingRule)
+Object.defineProperties(CSSGroupingRule.prototype, {
+    [Symbol.toStringTag]: {
+        value: "CSSGroupingRule",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////
+CSSGroupingRule.prototype.__proto__ = CSSRule.prototype
+
+
+var CSSConditionRule = function CSSConditionRule(){
+    throw new TypeError("Illegal constructor");
+};catchvm.func_set_natvie(CSSConditionRule)
+Object.defineProperties(CSSConditionRule.prototype, {
+    [Symbol.toStringTag]: {
+        value: "CSSConditionRule",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////
+CSSConditionRule.prototype.__proto__ = CSSGroupingRule.prototype
+
+var CSSMediaRule = function CSSMediaRule(){
+    throw new TypeError("Illegal constructor");
+};catchvm.func_set_natvie(CSSMediaRule)
+Object.defineProperties(CSSMediaRule.prototype, {
+    [Symbol.toStringTag]: {
+        value: "CSSMediaRule",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////
+CSSMediaRule.prototype.__proto__ = CSSConditionRule.prototype
+
+var MessageEvent = function MessageEvent(type, init){
+    return catchvm.memory.MessageEvent(type, init)
+};catchvm.func_set_natvie(MessageEvent);
+Object.defineProperties(MessageEvent.prototype, {
+    [Symbol.toStringTag]: {
+        value: "MessageEvent",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////
+MessageEvent.prototype.__proto__ = Event.prototype
+
+catchvm.memory.MessageEvent = function(type, init){
+    console.log(arguments)
+    debugger;
+    var messageEvent = {};
+    ////////////////////////////////////////////////
+    messageEvent.type = type
+
+    /////////////////////////////////////////////////
+    messageEvent.__proto__ = MessageEvent.prototype;
+    return catchvm.proxy(messageEvent);
+};
+var Selection = function Selection(){
+    throw new TypeError("Illegal constructor");
+};catchvm.func_set_natvie(Selection)
+Object.defineProperties(Selection.prototype, {
+    [Symbol.toStringTag]: {
+        value: "Selection",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////
+
+var CustomEvent = function CustomEvent(type){
+    return catchvm.memory.customEvent(type)
+};catchvm.func_set_natvie(CustomEvent);
+Object.defineProperties(CustomEvent.prototype, {
+    [Symbol.toStringTag]: {
+        value: "CustomEvent",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////
+CustomEvent.prototype.__proto__ = Event.prototype
+
+catchvm.memory.customEvent = function(type){
+    var customEvent = {};
+    ////////////////////////////////////////////////
+    customEvent.type = type
+
+    /////////////////////////////////////////////////
+
+    customEvent.__proto__ = CustomEvent.prototype;
+    return catchvm.proxy(customEvent);
+};
+
+var TimeRanges = function TimeRanges(){
+    throw new TypeError("Illegal constructor");
+};catchvm.func_set_natvie(TimeRanges)
+Object.defineProperties(TimeRanges.prototype, {
+    [Symbol.toStringTag]: {
+        value: "TimeRanges",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////
+
+var DOMParser = function DOMParser(){
+    return catchvm.memory.domParser()
+};catchvm.func_set_natvie(DOMParser);
+Object.defineProperties(DOMParser.prototype, {
+    [Symbol.toStringTag]: {
+        value: "DOMParser",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////
+
+catchvm.memory.domParser = function(){
+    var domParser = {};
+    ////////////////////////////////////////////////
+
+
+    /////////////////////////////////////////////////
+
+    domParser.__proto__ = DOMParser.prototype;
+    return catchvm.proxy(domParser);
+};
+var AbstractRange = function AbstractRange(){
+    throw new TypeError("Illegal constructor");
+};catchvm.func_set_natvie(AbstractRange)
+Object.defineProperties(AbstractRange.prototype, {
+    [Symbol.toStringTag]: {
+        value: "AbstractRange",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////////
+
+
+
+var Range = function Range(){
+    return catchvm.memory.Range();
+};catchvm.func_set_natvie(Range);
+Object.defineProperties(Range.prototype, {
+    [Symbol.toStringTag]: {
+        value: "Range",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+Range.prototype.END_TO_END = 2
+Range.prototype.END_TO_START = 3
+Range.prototype.START_TO_END = 1
+Range.prototype.START_TO_START = 0
+
+///////////////////////////////////////////////////////////////
+
+Range.prototype.__proto__ = AbstractRange.prototype
+
+catchvm.memory.Range = function(){
+    var range = {};
+    ////////////////////////////////////////////////
+
+
+    /////////////////////////////////////////////////
+
+    range.__proto__ = Range.prototype;
+    return catchvm.proxy(range);
+};
+
+var DataTransfer = function DataTransfer(){
+    return catchvm.memory.DataTransfer()
+};catchvm.func_set_natvie(DataTransfer);
+Object.defineProperties(DataTransfer.prototype, {
+    [Symbol.toStringTag]: {
+        value: "DataTransfer",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////////
+
+catchvm.memory.DataTransfer = function(){
+    var dataTransfer = {};
+    ////////////////////////////////////////////////
+
+
+    /////////////////////////////////////////////////
+
+    dataTransfer.__proto__ = DataTransfer.prototype;
+    return catchvm.proxy(dataTransfer);
+};
+
+var URL = function URL(url){
+    return catchvm.memory.URL(url);
+};catchvm.func_set_natvie(URL);
+Object.defineProperties(URL.prototype, {
+    [Symbol.toStringTag]: {
+        value: "URL",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+URL.revokeObjectURL = function revokeObjectURL(objectURL){
+    console.log(arguments)
+    return undefined;
+};catchvm.func_set_natvie(URL.revokeObjectURL);
+
+URL.createObjectURL = function createObjectURL(object){
+    console.log(arguments)
+
+    var room = [
+        'blob:chrome-extension://inedkoakiaeepjoblbiiipedngonadhn/439ebb19-5bfa-4025-b64d-e4c91564d97f',
+        'blob:chrome-extension://inedkoakiaeepjoblbiiipedngonadhn/b8cc8ec3-89b2-4985-b632-699cb4fc960e',
+        'blob:chrome-extension://inedkoakiaeepjoblbiiipedngonadhn/359feba5-24d4-42cb-aaf1-6fa3bf091a7f',
+        'blob:chrome-extension://inedkoakiaeepjoblbiiipedngonadhn/4b2b323d-af03-40b3-963e-3690c9b50a24',
+        'blob:chrome-extension://inedkoakiaeepjoblbiiipedngonadhn/24e160dc-9248-4642-9ebe-94ebc282909d',
+        'blob:chrome-extension://inedkoakiaeepjoblbiiipedngonadhn/b8bbc67d-8b75-49f7-9dfd-46860f377f80',
+        'blob:chrome-extension://inedkoakiaeepjoblbiiipedngonadhn/bb280e54-810b-4f9c-b450-131f56117ec9',
+        'blob:chrome-extension://inedkoakiaeepjoblbiiipedngonadhn/b94677a5-6b6d-40b7-86a0-d544e28d76ed',
+        'blob:chrome-extension://inedkoakiaeepjoblbiiipedngonadhn/f95ff2c7-c4a2-43b3-9e00-da4ed3d61728'
+    ]
+
+    return room[Math.floor(Math.random() * room.length)];
+};catchvm.func_set_natvie(URL.createObjectURL);
+
+
+
+
+
+
+///////////////////////////////////////////////////////////////
+
+catchvm.memory.URL = function(url){
+    var url = {};
+    ////////////////////////////////////////////////
+
+
+    /////////////////////////////////////////////////
+
+    url.__proto__ = URL.prototype;
+    return catchvm.proxy(url);
+};
+var Blob = function Blob(array=[], options=''){
+    return catchvm.memory.Blob(array, options)
+};catchvm.func_set_natvie(Blob);
+Object.defineProperties(Blob.prototype, {
+    [Symbol.toStringTag]: {
+        value: "Blob",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+Blob.prototype.size = ''
+Blob.prototype.type = ''
+
+
+///////////////////////////////////////////////////////////////
+
+catchvm.memory.Blob = function(array=[], options=''){
+    var blob = {};
+    ////////////////////////////////////////////////
+    if(array !== undefined){
+        blob.size = array.length
+    }else{
+        blob.size = 0
+    }
+
+    if(options !== ''){
+        blob.type = options['type']
+    }else{
+        blob.type = ''
+    }
+
+    /////////////////////////////////////////////////
+    blob.__proto__ = Blob.prototype;
+    return catchvm.proxy(blob);
+};
+
+var TextDecoder = function TextDecoder(utfLabel = 'utf-8', options){
+    return catchvm.memory.TextDecoder(utfLabel, options)
+};catchvm.func_set_natvie(TextDecoder);
+Object.defineProperties(TextDecoder.prototype, {
+    [Symbol.toStringTag]: {
+        value: "TextDecoder",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+TextDecoder.prototype.decode = function decode(buffer, options){
+    console.log(arguments)
+    // debugger;
+    return undefined;
+};catchvm.func_set_natvie(TextDecoder.prototype.decode);
+
+
+///////////////////////////////////////////////////////////////
+catchvm.memory.TextDecoder = function(utfLabel = 'utf-8', options){
+    var textDecoder = {};
+    ////////////////////////////////////////////////
+    //这里有编码限制，如果不是正确的编码需要报错
+    textDecoder.encoding = utfLabel
+
+    /////////////////////////////////////////////////
+    textDecoder.__proto__ = TextDecoder.prototype;
+    return catchvm.proxy(textDecoder);
+};
+
+
+var TextEncoder = function TextEncoder(){
+    return catchvm.memory.TextEncoder()
+};catchvm.func_set_natvie(TextEncoder);
+Object.defineProperties(TextEncoder.prototype, {
+    [Symbol.toStringTag]: {
+        value: "TextEncoder",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+TextEncoder.prototype.encode = function encode(str){
+    var utf8 = [];
+    for (var i=0; i < str.length; i++) {
+        var charcode = str.charCodeAt(i);
+        if (charcode < 0x80) utf8.push(charcode);
+        else if (charcode < 0x800) {
+            utf8.push(0xc0 | (charcode >> 6),
+                      0x80 | (charcode & 0x3f));
+        }
+        else if (charcode < 0xd800 || charcode >= 0xe000) {
+            utf8.push(0xe0 | (charcode >> 12),
+                      0x80 | ((charcode>>6) & 0x3f),
+                      0x80 | (charcode & 0x3f));
+        }
+        else {
+            i++;
+            charcode = 0x10000 + (((charcode & 0x3ff)<<10) | (str.charCodeAt(i) & 0x3ff))
+            utf8.push(0xf0 | (charcode >>18),
+                      0x80 | ((charcode>>12) & 0x3f),
+                      0x80 | ((charcode>>6) & 0x3f),
+                      0x80 | (charcode & 0x3f));
+        }
+    }
+    return new Uint8Array(utf8);
+}
+
+
+///////////////////////////////////////////////////////////////
+catchvm.memory.TextEncoder = function(){
+    var textEncoder = {};
+    ////////////////////////////////////////////////
+    textEncoder.encoding = 'utf-8'
+
+    /////////////////////////////////////////////////
+    textEncoder.__proto__ = TextEncoder.prototype;
+    return catchvm.proxy(textEncoder);
+};
+
+var URLSearchParams = function URLSearchParams(options){
+    return catchvm.memory.URLSearchParams(options);
+};catchvm.func_set_natvie(URLSearchParams);
+Object.defineProperties(URLSearchParams.prototype, {
+    [Symbol.toStringTag]: {
+        value: "URLSearchParams",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////////
+
+catchvm.memory.URLSearchParams = function(options){
+    var urlSearchParams = {};
+    ////////////////////////////////////////////////
+
+
+    /////////////////////////////////////////////////
+
+    urlSearchParams.__proto__ = URLSearchParams.prototype;
+    return catchvm.proxy(urlSearchParams);
+};
+var Crypto = function Crypto(){
+    throw new TypeError("Illegal constructor");
+};catchvm.func_set_natvie(Crypto)
+Object.defineProperties(Crypto.prototype, {
+    [Symbol.toStringTag]: {
+        value: "Crypto",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+Crypto.prototype.subtle = {}
+
+///////////////////////////////////////////////////////////////
+
+crypto = {}
+crypto.__proto__ = Crypto.prototype
+crypto = catchvm.proxy(crypto)
+var IDBRequest = function IDBRequest(){
+    throw new TypeError("Illegal constructor");
+};catchvm.func_set_natvie(IDBRequest);
+Object.defineProperties(IDBRequest.prototype, {
+    [Symbol.toStringTag]: {
+        value: "IDBRequest",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////////
+IDBRequest.prototype.__proto__ = EventTarget.prototype
+
+
+var IDBOpenDBRequest = function IDBOpenDBRequest(){
+    throw new TypeError("Illegal constructor");
+};catchvm.func_set_natvie(IDBOpenDBRequest);
+Object.defineProperties(IDBOpenDBRequest.prototype, {
+    [Symbol.toStringTag]: {
+        value: "IDBOpenDBRequest",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////////
+IDBOpenDBRequest.prototype.__proto__ = IDBRequest.prototype
+
+catchvm.memory.IDBOpenDBRequest = {}
+catchvm.memory.IDBOpenDBRequest.__proto__ = IDBOpenDBRequest.prototype
+catchvm.memory.IDBOpenDBRequest = catchvm.proxy(catchvm.memory.IDBOpenDBRequest)
+var IDBFactory = function IDBFactory(){
+    throw new TypeError("Illegal constructor");
+};catchvm.func_set_natvie(IDBFactory)
+Object.defineProperties(IDBFactory.prototype, {
+    [Symbol.toStringTag]: {
+        value: "IDBFactory",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+IDBFactory.prototype.open = function open(){
+    // debugger;
+    return catchvm.memory.IDBOpenDBRequest
+};catchvm.func_set_natvie(IDBFactory.prototype.open)
+
+
+///////////////////////////////////////////////////////////////
+
+indexedDB = {}
+indexedDB.__proto__ = IDBFactory.prototype
+indexedDB = catchvm.proxy(indexedDB)
 var WindowProperties  =function WindowProperties(){
 
 };catchvm.func_set_natvie(WindowProperties)
@@ -1791,10 +2464,44 @@ Object.defineProperties(Node.prototype, {
 });
 ///////////////////////////////////////////////////////////////
 Node.prototype.ATTRIBUTE_NODE = 2;
+Node.prototype.parentNode = ''
+
 
 
 Node.prototype.appendChild = function appendChild(aChild){
+    if(aChild.tagName == 'DIV'){
+        aChild.offsetHeight = 20
+    }
+
     console.log(arguments)
+
+
+    if(this.tagName == 'FORM' && aChild.tagName == 'INPUT'){
+        debugger;
+        if(aChild.id){
+            this[aChild.id] = aChild
+        }
+        if(aChild.name){
+            this[aChild.name] = aChild
+        }
+
+    }
+
+    if(this.tagName == 'BODY' && aChild.tagName == 'FORM'){
+        debugger;
+        if(aChild.id){
+            window.__proto__[aChild.id] = aChild
+            window.__proto__.__proto__[aChild.id] = aChild
+        }
+        if(aChild.name){
+            window.__proto__[aChild.name] = aChild
+            window.__proto__.__proto__[aChild.name] = aChild
+        }
+
+    }
+
+
+
     var flag_ = false;
     if(this == aChild){
         debugger
@@ -1820,28 +2527,48 @@ Node.prototype.appendChild = function appendChild(aChild){
 };catchvm.func_set_natvie(Node.prototype.appendChild)
 
 Node.prototype.removeChild = function removeChild(Child){
-    console.log(arguments)
-    // debugger;
+    console.log(arguments);
+    var flag_ = false;
+    if(this == Child){
+        debugger;
+        flag_ = true;
+    }{
+        for(let i;i < this.childelement.length;i++){
+            flag_ = true;
+            if(this.childelement[i] == Child){
+                flag_ =false;
+                break;
+            }
+        }
+    }
+
+    if(flag_){
+        debugger;
+        throw new DOMException('Failed to execute \'removeChild\' on \'Node\': The node to be removed is not a child of this node.')
+    }
+
+
+    var index = this.childelement.indexOf(Child);
+    this.childelement.splice(index, 1);
+    Child.father_element = null;
+    return Child
+
 };catchvm.func_set_natvie(Node.prototype.removeChild)
-
-
-
-
-// for (var property_ in Node.prototype) {
-//     if(!(typeof Node.prototype[property_] === 'function')){
-//         Node.prototype.__defineGetter__(property_, function () {
-//             throw new TypeError("Illegal invocation");
-//         });
-//     }
-// }
 
 
 ///////////////////////////////////////////////////////////////
 
-
 Node.prototype.__proto__ = EventTarget.prototype;
 
+///////////////////////////////////////////////////////////////
 
+
+Node.prototype.__defineGetter__("ATTRIBUTE_NODE",function(){
+    throw TypeError("Illegal invocation")
+})
+Node.prototype.__defineGetter__("parentNode",function(){
+    throw TypeError("Illegal invocation")
+})
 
 var NodeList = function NodeList(){
     throw new TypeError("Illegal constructor");
@@ -1861,13 +2588,58 @@ NodeList.prototype.keys = function keys(){debugger;};catchvm.func_set_natvie(Nod
 NodeList.prototype.values = function values(){debugger;};catchvm.func_set_natvie(NodeList.prototype.values)
 
 ///////////////////////////////////////////////////////////////
+
 nodelist = [];
 nodelist.__proto__ = NodeList.prototype;
 
 nodelist = catchvm.proxy(nodelist);
 
+///////////////////////////////////////////////////////////////
+NodeList.prototype.__defineGetter__("length",function(){
+    throw TypeError("Illegal invocation")
+})
 
 
+var Attr = function Attr(){
+    throw new TypeError("Illegal constructor");
+};catchvm.func_set_natvie(Attr)
+Object.defineProperties(Attr.prototype, {
+    [Symbol.toStringTag]: {
+        value: "Attr",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////
+Attr.prototype.__proto__ = Node.prototype
+
+catchvm.memory.Attr = {
+    nodeName : 'class'
+}
+catchvm.memory.Attr.__proto__ = Attr.prototype
+catchvm.memory.Attr = catchvm.proxy(catchvm.memory.Attr)
+var NamedNodeMap = function NamedNodeMap(){
+    throw new TypeError("Illegal constructor");
+};catchvm.func_set_natvie(NamedNodeMap)
+Object.defineProperties(NamedNodeMap.prototype, {
+    [Symbol.toStringTag]: {
+        value: "NamedNodeMap",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+NamedNodeMap.prototype[0] = catchvm.memory.Attr
+NamedNodeMap.prototype.length = 1
+
+///////////////////////////////////////////////////////////////
+
+catchvm.memory.namedNodeMap = {
+    0 : catchvm.memory.Attr
+}
+catchvm.memory.namedNodeMap.__proto__ = NamedNodeMap.prototype
+catchvm.memory.namedNodeMap = catchvm.proxy(catchvm.memory.namedNodeMap)
 
 var Element = function Element(){
     throw new TypeError("Illegal constructor");
@@ -1882,14 +2654,28 @@ Object.defineProperties(Element.prototype, {
 
 Element.prototype.tagName = ''
 Element.prototype.classList = catchvm.memory.domTokenList
+Element.prototype.attributes = catchvm.memory.namedNodeMap
 
 
 
+Element.prototype.getElementsByTagName = function getElementsByTagName(tagName){
+    if(tagName == 'i'){
+        console.log(arguments)
+        return catchvm.memory.htmlAllCollection;
+    }
 
+    console.log(arguments)
+    debugger;
+    return catchvm.memory.htmlAllCollection;
+};catchvm.func_set_natvie(Element.prototype.getElementsByTagName)
 
 Element.prototype.getAttribute = function getAttribute(attributeName){
+    if (attributeName == 'r'){
+        return 'm'
+    }
+
     console.log(arguments)
-    // debugger;
+    debugger;
     return null;
 };catchvm.func_set_natvie(Element.prototype.getAttribute)
 
@@ -1902,6 +2688,18 @@ Element.prototype.remove = function remove(){
 ///////////////////////////////////////////////////////////////
 
 Element.prototype.__proto__ = Node.prototype;
+
+
+///////////////////////////////////////////////////////////////
+// Element.prototype.__defineGetter__("tagName",function(){
+//     throw TypeError("Illegal invocation")
+// })
+// Element.prototype.__defineGetter__("classList",function(){
+//     throw TypeError("Illegal invocation")
+// })
+// Element.prototype.__defineGetter__("attributes",function(){
+//     throw TypeError("Illegal invocation")
+// })
 
 
 var HTMLElement = function HTMLElement(){
@@ -1919,7 +2717,17 @@ HTMLElement.prototype.offsetHeight = 0
 
 ///////////////////////////////////////////////////////////////
 
+
 HTMLElement.prototype.__proto__ = Element.prototype;
+
+///////////////////////////////////////////////////////////////
+HTMLElement.prototype.__defineGetter__("offsetHeight",function(){
+    throw TypeError("Illegal invocation")
+})
+HTMLElement.prototype.__defineGetter__("style",function(){
+    throw TypeError("Illegal invocation")
+})
+
 
 var XMLHttpRequestEventTarget = function XMLHttpRequestEventTarget(){
     throw new TypeError("Illegal constructor");
@@ -2088,8 +2896,19 @@ catchvm.memory.plugin.new = function (data){
 }
 
 
-
-
+///////////////////////////////////////////////////////////////
+Plugin.prototype.__defineGetter__("description",function(){
+    throw TypeError("Illegal invocation")
+})
+Plugin.prototype.__defineGetter__("filename",function(){
+    throw TypeError("Illegal invocation")
+})
+Plugin.prototype.__defineGetter__("length",function(){
+    throw TypeError("Illegal invocation")
+})
+Plugin.prototype.__defineGetter__("name",function(){
+    throw TypeError("Illegal invocation")
+})
 
 
 
@@ -2135,6 +2954,21 @@ catchvm.memory.MimeType.new = function (data,plugin){
     return mimeType;
 };
 
+///////////////////////////////////////////////////////////////
+MimeType.prototype.__defineGetter__("description",function(){
+    throw TypeError("Illegal invocation")
+})
+MimeType.prototype.__defineGetter__("suffixes",function(){
+    throw TypeError("Illegal invocation")
+})
+MimeType.prototype.__defineGetter__("type",function(){
+    throw TypeError("Illegal invocation")
+})
+MimeType.prototype.__defineGetter__("enabledPlugin",function(){
+    throw TypeError("Illegal invocation")
+})
+
+
 var PluginArray = function PluginArray(){
     throw new TypeError("Illegal constructor");
 };catchvm.func_set_natvie(PluginArray)
@@ -2179,6 +3013,9 @@ Object.defineProperties(PluginArray.prototype, {
 PluginArray.prototype.length = '';
 
 PluginArray.prototype.item = function item(index){
+    if(index == 4294967296){
+        return navigator.plugins[0]
+    }
     debugger;
     return this[index];
 };catchvm.func_set_natvie(PluginArray.prototype.item)
@@ -2217,6 +3054,11 @@ if(catchvm.memory.PluginArray.temp != undefined){
 
 catchvm.memory.PluginArray._.__proto__ = PluginArray.prototype;
 catchvm.memory.PluginArray._ =  catchvm.proxy(catchvm.memory.PluginArray._);
+
+///////////////////////////////////////////////////////////////
+PluginArray.prototype.__defineGetter__("length",function(){
+    throw TypeError("Illegal invocation")
+})
 
 
 var MimeTypeArray = function MimeTypeArray(){
@@ -2271,10 +3113,6 @@ MimeTypeArray.prototype.namedItem = function namedItemem(key){
     return this[key];
 };catchvm.func_set_natvie(MimeTypeArray.prototype.namedItem)
 
-MimeTypeArray.prototype.__defineGetter__('length', function () {
-    throw new TypeError("Illegal invocation");
-});
-
 ///////////////////////////////////////////////////////////////
 
 catchvm.memory.MimeTypeArray._ = {};
@@ -2299,8 +3137,97 @@ if(catchvm.memory.PluginArray._ != undefined){
 catchvm.memory.MimeTypeArray._.__proto__ = MimeTypeArray.prototype
 catchvm.memory.MimeTypeArray._ =  catchvm.proxy(catchvm.memory.MimeTypeArray._);
 
+///////////////////////////////////////////////////////////////
+MimeTypeArray.prototype.__defineGetter__('length', function () {
+    throw new TypeError("Illegal invocation");
+});
+var CharacterData = function CharacterData(){
+    throw new TypeError("Illegal constructor");
+};catchvm.func_set_natvie(CharacterData)
+Object.defineProperties(CharacterData.prototype, {
+    [Symbol.toStringTag]: {
+        value: "CharacterData",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
 
 
+
+///////////////////////////////////////////////////////////////
+CharacterData.prototype.__proto__ = Node.prototype
+var Text = function Text(string){
+    return catchvm.memory.Text(string);
+};catchvm.func_set_natvie(Text);
+Object.defineProperties(Text.prototype, {
+    [Symbol.toStringTag]: {
+        value: "Text",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////////
+Text.prototype.__proto__ = CharacterData.prototype
+
+catchvm.memory.Text = function(string){
+    var text = {};
+    ////////////////////////////////////////////////
+    text.nodeValue = string
+
+    /////////////////////////////////////////////////
+    text.__proto__ = Text.prototype;
+    return catchvm.proxy(text);
+};
+
+
+
+var CDATASection = function CDATASection(){
+    throw new TypeError("Illegal constructor");
+};catchvm.func_set_natvie(CDATASection)
+Object.defineProperties(CDATASection.prototype, {
+    [Symbol.toStringTag]: {
+        value: "CDATASection",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////////
+CDATASection.prototype.__proto__ = Text.prototype
+
+var SVGElement = function SVGElement(){
+    throw new TypeError("Illegal constructor");
+};catchvm.func_set_natvie(SVGElement)
+Object.defineProperties(SVGElement.prototype, {
+    [Symbol.toStringTag]: {
+        value: "SVGElement",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////
+SVGElement.prototype.__proto__ = Element.prototype
+var DocumentType = function DocumentType(){
+    throw new TypeError("Illegal constructor");
+};catchvm.func_set_natvie(DocumentType)
+Object.defineProperties(DocumentType.prototype, {
+    [Symbol.toStringTag]: {
+        value: "DocumentType",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////
+DocumentType.prototype.__proto__ = Node.prototype
 
 window = this;
 delete global;
@@ -2315,7 +3242,6 @@ Object.defineProperties(Window.prototype, {
         configurable: true
     }
 });
-
 ///////////////////////////////////////////////////////////////
 
 
@@ -2336,6 +3262,9 @@ window.clearTimeout = function clearTimeout(id){
     debugger;
 };catchvm.func_set_natvie(window.clearTimeout)
 
+window.clearInterval = function clearInterval(id){
+    debugger;
+};catchvm.func_set_natvie(window.clearInterval)
 
 Window.prototype.PERSISTENT = 1;
 Window.prototype.TEMPORARY = 0;
@@ -2345,43 +3274,124 @@ Window.prototype.TEMPORARY = 0;
 window.top = window
 window.self = window
 
-window.outerHeight = 834;
-window.outerWidth = 1536;
-window.innerWidth = 1482;
-window.innerHeight = 726;
+window.outerHeight = 1122;
+window.outerWidth = 2048;
+window.innerWidth = 1994;
+window.innerHeight = 1014;
 window.screenX = 0;
-window.screenY = 0
+window.screenY = 0;
 window.pageYOffset = 0;
+window.pageXOffset = 0
 window.devicePixelRatio = 1.25;
-window.chrome = catchvm.proxy(class chrome{})
-window.name = ''
-window.performance = catchvm.memory.performance
+window.chrome = catchvm.proxy(class chrome{});
+window.name = '$_YWTU=72LWQI4Q8bytbc7bd6.wJpLYevwtzhdXTYyd9fVI0xG&$_YVTX=Ja&vdFm=';
+window.screenTop = 0;
+window.screenLeft = 0;
+window.length = 0;
+window.fetchHooked = true
+window.wDomains = ["appsec-mobile.sec.test.sankuai.com","appsec-mobile.meituan.com","msp.meituan.com","pikachu.mykeeta.com"];
+window.wPaths = [];
+window.xhrHooked = true;
+window.xhrHook = true;
+window._sdkGlueVersionMap = {
+    "sdkGlueVersion": "1.0.0.51",
+    "bdmsVersion": "1.0.1.5",
+    "captchaVersion": "4.0.2"
+};
 
+
+window[0] = window
 
 //↓↓↓↓↓↓↓↓↓↓↓↓↓可删↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
-window.onwheelx = {"_Ax": "0X21"}
+window.onwheelx = {
+    "_Ax": "0X21"
+}
 
 //↑↑↑↑↑↑↑↑↑↑↑↑↑可删↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
-window.alert = function alert(){
-    debugger;
+window.open = function open(){
     console.log(arguments)
+    debugger;
+};catchvm.func_set_natvie(window.open)
+
+
+window.webkitRequestFileSystem = function webkitRequestFileSystem(){
+    console.log(arguments)
+    // debugger;
+};catchvm.func_set_natvie(window.webkitRequestFileSystem)
+
+window.SVGUnitTypes = function SVGUnitTypes(){
+    console.log(arguments)
+    debugger;
+};catchvm.func_set_natvie(window.SVGUnitTypes)
+
+window.SVGNumber = function SVGNumber(){
+    console.log(arguments)
+    debugger;
+};catchvm.func_set_natvie(window.SVGNumber)
+
+window.SVGGElement = function SVGGElement(){
+    console.log(arguments)
+    debugger;
+};catchvm.func_set_natvie(window.SVGGElement)
+
+window.NodeFilter = function NodeFilter(){
+    console.log(arguments)
+    debugger;
+};catchvm.func_set_natvie(window.NodeFilter)
+
+window.CSSPageRule = function CSSPageRule(){
+    console.log(arguments)
+    debugger;
+};catchvm.func_set_natvie(window.CSSPageRule)
+
+window.SVGPointList = function SVGPointList(){
+    console.log(arguments)
+    debugger;
+};catchvm.func_set_natvie(window.SVGPointList)
+
+window.SVGMatrix = function SVGMatrix(){
+    console.log(arguments)
+    debugger;
+};catchvm.func_set_natvie(window.SVGMatrix)
+
+window.SVGAngle = function SVGAngle(){
+    console.log(arguments)
+    debugger;
+};catchvm.func_set_natvie(window.SVGAngle)
+
+window.MediaError = function MediaError(){
+    console.log(arguments)
+    debugger;
+};catchvm.func_set_natvie(window.MediaError)
+
+window.SVGRect = function SVGRect(){
+    console.log(arguments)
+    debugger;
+};catchvm.func_set_natvie(window.SVGRect)
+
+window.SVGElement = function SVGElement(){
+    console.log(arguments)
+    debugger;
+};catchvm.func_set_natvie(window.SVGElement)
+
+
+
+window.alert = function alert(){
+    console.log(arguments)
+    debugger;
 };catchvm.func_set_natvie(window.alert)
 // window.CHAMELEON_LOADED = true;
-
 
 window.fetch = function fetch(){
     debugger;
 };catchvm.func_set_natvie(window.fetch);
-window.requestAnimationFrame = function requestAnimationFrame(callback){
-    console.log(callback)
-    debugger;
-    return 1234567
+window.requestAnimationFrame = function requestAnimationFrame(){
+    // debugger;
+    return
 };catchvm.func_set_natvie(window.requestAnimationFrame);
-window.CSSRule = function CSSRule(){
-    debugger;
-};catchvm.func_set_natvie(window.CSSRule);
+
 window.DeviceOrientationEvent = function DeviceOrientationEvent(){
     debugger;
 };catchvm.func_set_natvie(window.DeviceOrientationEvent);
@@ -2430,10 +3440,12 @@ location.port = ''
 location.hostname = ''
 location.host = ''
 location.protocol = 'https:'
-location.search =
+location.search = ''
+location.origin = ''
+location.hash = ''
 
 //网站自己新定义的方法和属性(可删除)↓↓↓↓↓↓↓↓↓↓
-location.pathname = '';
+location.pathname = '/datasearch/home-index.html';
 
 //网站自己新定义的方法和属性(可删除)↑↑↑↑↑↑↑↑↑↑
 
@@ -2445,6 +3457,12 @@ location.pathname = '';
 
 
 location = catchvm.proxy(location);
+
+Object.defineProperty(window, 'location', {
+    configurable : false,
+    enumerable: true
+  });
+
 var Navigator = function Navigator(){
     throw new TypeError("Illegal constructor");
 };catchvm.func_set_natvie(Navigator)
@@ -2505,7 +3523,9 @@ Navigator.prototype.userAgentData = catchvm.memory.userAgentData
 
 //↓↓↓↓↓↓↓↓↓↓↓↓↓可删↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
-Navigator.prototype.vendorSubs = {"ink": Date.now()}
+Navigator.prototype.vendorSubs ={
+    "ink": 1720244657743
+}
 
 //↑↑↑↑↑↑↑↑↑↑↑↑↑可删↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
@@ -2524,7 +3544,12 @@ Navigator.prototype.getUserMedia = function getUserMedia(){
 };catchvm.func_set_natvie(Navigator.prototype.getUserMedia)
 
 Navigator.prototype.getBattery = function getBattery(){
-    debugger;
+	debugger;
+	return {
+		then: function (func) {
+			func({charging:false,chargingTime:Infinity, dischargingTime:8378,level:0.75, onchargingchange:null, onchargingtimechange:null,ondischargingtimechange:null,onlevelchange:null})
+		}
+	}
 };catchvm.func_set_natvie(Navigator.prototype.getBattery)
 
 Navigator.prototype.clearAppBadge = function clearAppBadge(){
@@ -2598,9 +3623,162 @@ for (let temp in Navigator.prototype) {
 
 navigator = catchvm.proxy(navigator);
 
+window.clientInformation = navigator;
 
-
-
+///////////////////////////////////////////////////////////////
+Navigator.prototype.__defineGetter__("webdriver",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("plugins",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("mimeTypes",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("mediaDevices",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("language",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("languages",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("userAgent",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("vendor",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("appName",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("appVersion",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("cookieEnabled",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("deviceMemory",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("maxTouchPoints",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("doNotTrack",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("productSub",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("vendorSub",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("pdfViewerEnabled",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("appCodeName",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("onLine",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("scheduling",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("userActivation",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("geolocation",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("connection",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("bluetooth",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("clipboard",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("credentials",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("keyboard",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("managed",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("storage",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("serviceWorker",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("virtualKeyboard",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("wakeLock",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("ink",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("hid",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("locks",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("mediaCapabilities",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("mediaSession",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("permissions",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("presentation",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("serial",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("gpu",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("usb",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("windowControlsOverlay",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("xr",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("userAgentData",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("vendorSubs",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("hardwareConcurrency",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("platform",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("product",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("webkitTemporaryStorage",function(){
+	throw TypeError("Illegal invocation")
+})
+Navigator.prototype.__defineGetter__("webkitPersistentStorage",function(){
+	throw TypeError("Illegal invocation")
+})
 var History = function History(){
     throw new TypeError("Illegal constructor");
 };catchvm.func_set_natvie(History)
@@ -2637,12 +3815,12 @@ Object.defineProperties(Screen.prototype, {
     }
 });
 ///////////////////////////////////////////////////////////////
-Screen.prototype.availHeight = 834;
-Screen.prototype.availWidth = 1536;
+Screen.prototype.availHeight = 1122;
+Screen.prototype.availWidth = 2048;
 Screen.prototype.availLeft = 0;
 Screen.prototype.availTop = 0;
-Screen.prototype.width = 1536;
-Screen.prototype.height = 864;
+Screen.prototype.width = 2048;
+Screen.prototype.height = 1152;
 Screen.prototype.colorDepth = 24;
 Screen.prototype.pixelDepth = 24;
 
@@ -2663,8 +3841,35 @@ for (var property_ in Screen.prototype) {
 
 ///////////////////////////////////////////////////////////////
 
-
 screen = catchvm.proxy(screen);
+
+///////////////////////////////////////////////////////////////
+Screen.prototype.__defineGetter__("availHeight",function(){
+    throw TypeError("Illegal invocation")
+})
+Screen.prototype.__defineGetter__("availWidth",function(){
+    throw TypeError("Illegal invocation")
+})
+Screen.prototype.__defineGetter__("availLeft",function(){
+    throw TypeError("Illegal invocation")
+})
+Screen.prototype.__defineGetter__("availTop",function(){
+    throw TypeError("Illegal invocation")
+})
+Screen.prototype.__defineGetter__("width",function(){
+    throw TypeError("Illegal invocation")
+})
+Screen.prototype.__defineGetter__("height",function(){
+    throw TypeError("Illegal invocation")
+})
+Screen.prototype.__defineGetter__("colorDepth",function(){
+    throw TypeError("Illegal invocation")
+})
+Screen.prototype.__defineGetter__("pixelDepth",function(){
+    throw TypeError("Illegal invocation")
+})
+
+
 
 var Storage = function Storage(){
     throw new TypeError("Illegal constructor");
@@ -2727,14 +3932,16 @@ localStorage._dev_ha = 'dcdd5770c63deb47e35549150a89ba93'
 localStorage.sdt_source_storage_key = '{"commonPatch":["/fe_api/burdock/v2/note/post","/api/sns/web/v1/comment/post","/api/sns/web/v1/note/like","/api/sns/web/v1/note/collect","/api/sns/web/v1/user/follow","/api/sns/web/v1/feed","/api/sns/web/v1/login/activate","/api/sns/web/v1/note/metrics_report","/api/redcaptcha","/api/store/jpd/main","/phoenix/api/strategy/getAppStrategy"],"signUrl":"https://fe-video-qc.xhscdn.com/fe-platform/6e0d0a976c31ec4cf07d8dfaea68aefe79a8c678.js","signVersion":"1","url":"https://fe-video-qc.xhscdn.com/fe-platform/7a700537086390bf42ed95a3c3b675820f791299.js","reportUrl":"/api/sec/v1/shield/webprofile","desVersion":"2","validate":true}'
 localStorage._byted_param_sw = 'JnfXqTqnLfFr+qj7drY='
 localStorage.tt_scid = 'fj9WDjGsZIIRjlfk4MqP8QwzdNZclzad-FJwSFLoCaB84qKtJNGWgLlI3oUW3moO46aa'
-localStorage.xmst = 'tvzxtTuBLjwtJOAtN2MbHyVWzlo_xDqyd5spFM8gUbPYLV--CBOmnxP4j7USfqUIOfP350BCnUUkv0Z5xyFFEBXC4iM3-B44A6gHe1QTvTO8vII7q8uy'
+localStorage.xmst = 'l-NRHTettH1rlXNDRec4bRFqFnIOj8nM-K2eqyjGX4ObaDThUfAjilMJLxYY39hsvAhV7AZHr7jsbyfRvb73A59CYieHo7926p4Gj4o6aNBPU0mybngnc-y0T_VQI0m9'
+localStorage.dfp_params_list = '{"black_host":["gatewaydsp.meituan.com","portal-portm.meituan.com","dd.sankuai.com","dd.meituan.com","catfront.dianping.com","catfront.51ping.com","report.meituan.com","dreport.meituan.net","postreport.meituan.com","wreport1.meituan.net","lx0.meituan.com","lx1.meituan.net","lx2.meituan.net","plx.meituan.com","hlx.meituan.com","ad.e.waimai.sankuai.com:80","speech-inspection.vip.sankuai.com","kms.sankuai.com","r.dianping.com","r1.dianping.com","api-channel.waimai.meituan.com","lion-monitor.sankuai.com","cat-config.sankuai.com","catdot.sankuai.com","s3plus.meituan.net","ebooking.meituan.com","eb.hotel.test.sankuai.com","eb.vip.sankuai.com","eb.meituan.com","logan.sankuai.com","mads.meituan.com","mlog.dianping.com","oneservice.meituan.com","api-unionid.meituan.com","fe-config.meituan.com","fe-config0.meituan.com","h.meituan.com","p.meituan.com","peisong-collector.meituan.com","wreport2.meituan.net","hreport.meituan.com","c.qcs.test.sankuai.com","dache.st.meituan.com","dache.meituan.com"],"black_url":["syncloud.meituan.com/be/chp/takeaway/","syncloud.meituan.com/be/chp/takeawayClassifyManagement/","syncloud.meituan.com/be/chp/createSkuToTakeaway/","i.meituan.com/api/address","i.meituan.com/api/maf","mapi.dianping.com/mapi/mlog/applog.bin","mapi.dianping.com/mapi/mlog/zlog.bin","mapi.dianping.com/mapi/mlog/mtmidas.bin","mapi.dianping.com/mapi/mlog/mtzmidas.bin","m.dianping.com/adp/log","mlog.meituan.com/log","mlog.dianping.com/log","m.api.dianping.com/mapi/mlog/applog.bin","m.api.dianping.com/mapi/mlog/zlog.bin","m.api.dianping.com/mapi/mlog/mtmidas.bin","m.api.dianping.com/mapi/mlog/mtzmidas.bin","peisong.meituan.com/collector/report/logdata/short/batch","transcode-video.sankuai.com/pfop","peisong.meituan.com/api/collector/collector/report/logdata/short/batch","api-map.meituan.com/tile/style","api-map01.meituan.com/tile/style","api-map02.meituan.com/tile/style","api-map03.meituan.com/tile/style","api-map04.meituan.com/tile/style","api-map05.meituan.com/tile/style","api-map.meituan.com/tile/source","api-map01.meituan.com/tile/source","api-map02.meituan.com/tile/source","api-map03.meituan.com/tile/source","api-map04.meituan.com/tile/source","api-map05.meituan.com/tile/source","api-map.meituan.com/tile/font","api-map01.meituan.com/tile/font","api-map02.meituan.com/tile/font","api-map03.meituan.com/tile/font","api-map04.meituan.com/tile/font","api-map05.meituan.com/tile/font","api-map.meituan.com/tile/grid","api-map01.meituan.com/tile/grid","api-map02.meituan.com/tile/grid","api-map03.meituan.com/tile/grid","api-map04.meituan.com/tile/grid","api-map05.meituan.com/tile/grid","api-map.meituan.com/tile/dem","api-map01.meituan.com/tile/dem","api-map02.meituan.com/tile/dem","api-map03.meituan.com/tile/dem","api-map04.meituan.com/tile/dem","api-map05.meituan.com/tile/dem","api-map.meituan.com/render/traffic","api-map01.meituan.com/render/traffic","api-map02.meituan.com/render/traffic","api-map03.meituan.com/render/traffic","api-map04.meituan.com/render/traffic","api-map05.meituan.com/render/traffic","api-map.meituan.com/tile/model","api-map01.meituan.com/tile/model","api-map02.meituan.com/tile/model","api-map03.meituan.com/tile/model","api-map04.meituan.com/tile/model","api-map05.meituan.com/tile/model","spotter-relay.sankuai.com/auk01/","spotter-livevod.vip.sankuai.com/recordings/auk01/","e.dianping.com/joy/merchant/newuploadimage","e.51ping.com/joy/merchant/newuploadimage","spotter-relay.sankuai.com/maiot/","wx-shangou.meituan.com/quickbuy/v2/activity/supersale/getLocationByIp","wx-shangou.meituan.com/quickbuy/v2/activity/supersale/bigPromotionHeadInfo","wx-shangou.meituan.com/quickbuy/v2/activity/supersale/bigPromotionResourceInfo","wx-shangou.meituan.com/quickbuy/v1/user/address/posname","wx-shangou.meituan.com/quickbuy/v1/activity/supersale/grab/queryUserSubscription","transcode-video.cloud.test.sankuai.com/pfop"],"close_knb_sign":0,"header_white_host":[],"swim_black_host":["ebooking.meituan.com","eb.hotel.test.sankuai.com","eb.vip.sankuai.com","eb.meituan.com","c.qcs.test.sankuai.com","dache.st.meituan.com","dache.meituan.com"],"white_host":[".dianping.com",".meituan.com",".sankuai.com",".maoyan.com",".neixin.cn",".51ping.com",".baobaoaichi.cn",".dper.com",".jchunuo.com"]}'
 
 
+
+///////////////////////////////////////////////////////////////
 localStorage.__proto__ = Storage.prototype;
 
 sessionStorage = {};
 sessionStorage.__proto__ = Storage.prototype;
-
 
 localStorage = catchvm.proxy(localStorage);
 sessionStorage = catchvm.proxy(sessionStorage);
@@ -2788,6 +3995,8 @@ catchvm.memory.HTMLElements['body'] = function(){
     body.tagName = 'body'.toUpperCase()
     body.childelement = []
     body.father_element = null
+    body.clientHeight = 1014
+    body.clientWidth = 1994
 
     HTMLBodyElement.prototype.aLink = ''
     HTMLBodyElement.prototype.background = ''
@@ -2896,9 +4105,10 @@ HTMLHeadElement.prototype.__proto__ = HTMLElement.prototype;
 catchvm.memory.HTMLElements['head'] = function(){
     var head = new(function(){});
     ///////////////////////////////////////////////
-    head.tagName = 'head'.toUpperCase()
-    head.childelement = []
-    head.father_element = null
+    head.tagName = 'head'.toUpperCase();
+    head.childelement = [];
+    head.father_element = null;
+    head.childElementCount = 46
 
     ///////////////////////////////////////////////
     head.__proto__ = HTMLHeadElement.prototype;
@@ -2924,6 +4134,9 @@ catchvm.memory.HTMLElements['html'] = function(){
     html.tagName = 'html'.toUpperCase()
     html.childelement = []
     html.father_element = null
+    html.clientHeight = 726
+    html.clientWidth = 1467
+
 
     ///////////////////////////////////////////////
     html.__proto__ = HTMLHtmlElement.prototype;
@@ -2949,6 +4162,7 @@ catchvm.memory.HTMLElements['iframe'] = function(){
     iframe.tagName = 'iframe'.toUpperCase()
     iframe.childelement = []
     iframe.father_element = null
+    iframe.contentWindow = null
 
     ///////////////////////////////////////////////
     iframe.__proto__ = HTMLIFrameElement.prototype;
@@ -3377,7 +4591,47 @@ catchvm.memory.HTMLElements['li'] = function(){
     li.__proto__ = HTMLLIElement.prototype;
     return li;
 }
+var HTMLMetaElement  = function HTMLMetaElement (){
+    throw new TypeError("Illegal constructor");
+};catchvm.func_set_natvie(HTMLMetaElement )
+Object.defineProperties(HTMLMetaElement .prototype, {
+    [Symbol.toStringTag]: {
+        value: "HTMLMetaElement ",
+        configurable: true
+    }
+});
 
+HTMLMetaElement .prototype.__proto__ = HTMLElement.prototype;
+
+
+catchvm.memory.HTMLElements['meta'] = function(){
+    var meta = new(function(){});
+    ///////////////////////////////////////////////
+    meta.tagName = 'meta'.toUpperCase()
+    meta.childelement = []
+    meta.father_element = null
+    meta.content = ''
+    meta.parentNode = ''
+
+    ///////////////////////////////////////////////
+    meta.__proto__ = HTMLMetaElement .prototype;
+    return meta;
+}
+
+var Audio = function Audio(){
+    return catchvm.memory.HTMLElements['audio']()
+};catchvm.func_set_natvie(Audio);
+Object.defineProperties(Audio.prototype, {
+    [Symbol.toStringTag]: {
+        value: "Audio",
+        configurable: true
+    }
+});
+///////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////
+Audio.prototype = HTMLAudioElement.prototype
 var Document = function Document(){
 
 };catchvm.func_set_natvie(Document)
@@ -3389,30 +4643,55 @@ Object.defineProperties(Document.prototype, {
 });
 ///////////////////////////////////////////////////////////////
 Document.prototype.URL = ''
-Document.prototype.cookie = 'device_web_cpu_core=12; device_web_memory_size=8; architecture=amd64; douyin.com; home_can_add_dy_2_desktop=%220%22; dy_swidth=1536; dy_sheight=864; csrf_session_id=5937042835471a2d8a322cf0b051f230; FORCE_LOGIN=%7B%22videoConsumedRemainSeconds%22%3A180%7D; strategyABtestKey=%221713432427.108%22; passport_csrf_token=d3606d01cc731ff35ab16ae185f15880; passport_csrf_token_default=d3606d01cc731ff35ab16ae185f15880; bd_ticket_guard_client_web_domain=2; __ac_signature=_02B4Z6wo00f01zeweSwAAIDAQZ-kYFYnmX83kH2AAKvXd0; stream_recommend_feed_params=%22%7B%5C%22cookie_enabled%5C%22%3Atrue%2C%5C%22screen_width%5C%22%3A1536%2C%5C%22screen_height%5C%22%3A864%2C%5C%22browser_online%5C%22%3Atrue%2C%5C%22cpu_core_num%5C%22%3A12%2C%5C%22device_memory%5C%22%3A8%2C%5C%22downlink%5C%22%3A10%2C%5C%22effective_type%5C%22%3A%5C%224g%5C%22%2C%5C%22round_trip_time%5C%22%3A0%7D%22; bd_ticket_guard_client_data=eyJiZC10aWNrZXQtZ3VhcmQtdmVyc2lvbiI6MiwiYmQtdGlja2V0LWd1YXJkLWl0ZXJhdGlvbi12ZXJzaW9uIjoxLCJiZC10aWNrZXQtZ3VhcmQtcmVlLXB1YmxpYy1rZXkiOiJCSWFobHdtNHVrUndqWnpwdXBUUlZQdUYyb2oreFpzcmd4NnkvMGRmVnJvdW96YmxhbzZGTmxsSXFsaXhyelVXQVlEQ0ZvUUFXYmd3RHVuekZ3YjNZMUU9IiwiYmQtdGlja2V0LWd1YXJkLXdlYi12ZXJzaW9uIjoxfQ%3D%3D; msToken=BD-dgRc4wkAIrxNItMiL0SS6yvqrNNcTPwfgj0j0kquQbRSuJrxWIUI6NAjNtyRLjypRTlVdhIXerMzwTl595LiUo1pR6SqWmsLdm4iqtRf9yvC7I6QS-LXqykNlMg==; download_guide=%222%2F20240418%2F0%22; IsDouyinActive=true'
-Document.prototype.referrer = ''
+Document.prototype.cookie = ''
+Document.prototype.referrer = 'https://www.nmpa.gov.cn/datasearch/home-index.html'
 Document.prototype.documentElement = catchvm.proxy(catchvm.memory.HTMLElements['html']())
-Document.prototype.body = catchvm.memory.HTMLElements['body']()
-
+Document.prototype.body = catchvm.proxy(catchvm.memory.HTMLElements['body']())
+Document.prototype.head = catchvm.proxy(catchvm.memory.HTMLElements['head']())
+Document.prototype.characterSet = 'UTF-8'
+Document.prototype.charset = 'UTF-8'
+Document.prototype.visibilityState = 'visible'
 
 
 Document.prototype.all = catchvm.memory.htmlAllCollection
-catchvm.memory.documentcount = 0
-Object.defineProperty(Document.prototype, "all", {
-    get: function (){
-        return [undefined, undefined, catchvm.memory.htmlAllCollection][catchvm.memory.documentcount++]
-    }
-})
+// catchvm.memory.documentcount = 0
+// Object.defineProperty(Document.prototype, "all", {
+//     get: function (){
+//         return [undefined, undefined, catchvm.memory.htmlAllCollection][catchvm.memory.documentcount++]
+//     }
+// })
 
 
 
+Document.prototype.createExpression = function createExpression(){
+    console.log(arguments)
+    return {}
+};catchvm.func_set_natvie(Document.prototype.createExpression);
+
+
+Document.prototype.exitFullscreen = function exitFullscreen(){
+    console.log(arguments)
+    debugger;
+};catchvm.func_set_natvie(Document.prototype.exitFullscreen);
 
 Document.prototype.getElementsByClassName = function getElementsByClassName(){
     console.log(arguments)
     debugger;
 };catchvm.func_set_natvie(Document.prototype.getElementsByClassName);
 
-Document.prototype.getElementById = function getElementById(){
+Document.prototype.getElementById = function getElementById(id){
+    if(id == "root-hammerhead-shadow-ui"){
+        return null
+    }
+
+    if(id == 'script'){
+        return {
+            0: catchvm.memory.HTMLElements['script']()
+        }
+    }
+
+
+
     console.log(arguments)
     debugger;
 };catchvm.func_set_natvie(Document.prototype.getElementById);
@@ -3435,9 +4714,27 @@ Document.prototype.createElement = function createElement(tagName){
 
 
 Document.prototype.getElementsByTagName = function getElementsByTagName(name){
+    if(name == 'meta'){
+        console.log(arguments)
+        return catchvm.memory.meta
+    }
+
+    if(name == 'script'){
+        console.log(arguments)
+        return {
+            '0':catchvm.proxy(catchvm.memory.HTMLElements['script']),
+            '1':catchvm.proxy(catchvm.memory.HTMLElements['script'])
+        }
+    }
+    if(name == 'base'){
+        console.log(arguments)
+        return catchvm.memory.htmlAllCollection
+    }
+
+
     console.log(arguments)
     debugger;
-    return [{}]
+    return catchvm.memory.htmlAllCollection
 };catchvm.func_set_natvie(Document.prototype.getElementsByTagName);
 
 Document.prototype.querySelectorAll = function querySelectorAll(selectors){
@@ -3480,6 +4777,36 @@ Document.prototype.createEvent = function createEvent(type){
 Document.prototype.__proto__ = Node.prototype;
 
 
+///////////////////////////////////////////////////////////////
+
+// Document.prototype.__defineGetter__("URL",function(){
+//     throw TypeError("Illegal invocation")
+// })
+// Document.prototype.__defineGetter__("cookie",function(){
+//     throw TypeError("Illegal invocation")
+// })
+// Document.prototype.__defineGetter__("referrer",function(){
+//     throw TypeError("Illegal invocation")
+// })
+// Document.prototype.__defineGetter__("documentElement",function(){
+//     throw TypeError("Illegal invocation")
+// })
+// Document.prototype.__defineGetter__("body",function(){
+//     throw TypeError("Illegal invocation")
+// })
+// Document.prototype.__defineGetter__("head",function(){
+//     throw TypeError("Illegal invocation")
+// })
+// Document.prototype.__defineGetter__("characterSet",function(){
+//     throw TypeError("Illegal invocation")
+// })
+// Document.prototype.__defineGetter__("charset",function(){
+//     throw TypeError("Illegal invocation")
+// })
+// Document.prototype.__defineGetter__("all",function(){
+//     throw TypeError("Illegal invocation")
+// })
+
 
 
 
@@ -3499,18 +4826,18 @@ document = {};
 document.__proto__ = HTMLDocument.prototype;
 
 
-for (var property_ in HTMLDocument.prototype) {
-    document[property_] = HTMLDocument.prototype[property_];
-    if(!(typeof HTMLDocument.prototype[property_] === 'function')){
-        HTMLDocument.prototype.__defineGetter__(property_, function () {
-            throw new TypeError("Illegal invocation");
-        });
-    }
-}
+
 ///////////////////////////////////////////////////////////////
 
 HTMLDocument.prototype.__proto__ = Document.prototype;
 document = catchvm.proxy(document);
+
+Object.defineProperty(window, 'document', {
+    configurable : false,
+    enumerable: true
+});
+
+
 
 
 var Image = function Image(width, height){
@@ -3569,13 +4896,15 @@ catchvm.memory.tegexp_count = 0
 var RegExp = new Proxy(RegExp,{
     construct(target, argArray) {
 
-        console.log(arguments)
-        debugger;
-
-        // if(catchvm.memory.tegexp_count > 8){
-        //     console.log(arguments)
+        // if(argArray[0].indexOf('vm') != -1){
+        //     argArray[0] = 'repl|bootstrapNodeJSCore|tryModuleLoad|evalmachine|runInContext'
         //     debugger;
         // }
+
+        console.log(arguments)
+        // debugger;
+
+
 
         catchvm.memory.tegexp_count++
         return new target(...argArray)
@@ -3584,8 +4913,11 @@ var RegExp = new Proxy(RegExp,{
 
 
 
-//冻结navigator防止修改值
-Object.freeze(navigator)
+//冻结navigator、document。location防止修改值
+Object.freeze(navigator);
+// Object.freeze(document);
+Object.freeze(location);
+
 
 catchvm.memory.isFrozen = Object.isFrozen
 Object.isFrozen = function isFrozen(obj){
@@ -3598,8 +4930,8 @@ catchvm.memory.assign = Object.assign
 Object.assign = function assign(target, ...source){
 
 
-    // console.log(arguments)
-    // debugger;
+    console.log(target,source)
+    debugger;
     return catchvm.memory.assign(target, ...source)
 }
 
@@ -3639,6 +4971,21 @@ Object.getOwnPropertyDescriptor = function getOwnPropertyDescriptor(obj, prop){
         return undefined
     }
 
+    if(obj == window && prop == 'TextMetrics'){
+        Object.defineProperty(window,'TextMetrics',{
+            enumerable:false
+        })
+        // debugger;
+        console.log("检测了 ——> Object.getOwnPropertyDescriptor(window,'TextMetrics')")
+        return catchvm.memory.getOwnPropertyDescriptor(obj, prop)
+    }
+    if(obj == navigator && prop == "plugins"){
+        console.log("检测了 ——> Object.getOwnPropertyDescriptor(navigator,'plugins')")
+        return undefined
+    }
+
+
+
     console.log(arguments)
     debugger;
     return catchvm.memory.getOwnPropertyDescriptor(obj, prop)
@@ -3668,1232 +5015,1263 @@ Object.getOwnPropertyNames = function getOwnPropertyNames(obj){
     if(obj == window){
         console.log('检测了 ——> Object.getOwnPropertyNames(window)      注意：这里每个网站检测返回的window可能不一样，需要自己修改')
         return [
-    "Object",
-    "Function",
-    "Array",
-    "Number",
-    "parseFloat",
-    "parseInt",
-    "Infinity",
-    "NaN",
-    "undefined",
-    "Boolean",
-    "String",
-    "Symbol",
-    "Date",
-    "Promise",
-    "RegExp",
-    "Error",
-    "AggregateError",
-    "EvalError",
-    "RangeError",
-    "ReferenceError",
-    "SyntaxError",
-    "TypeError",
-    "URIError",
-    "globalThis",
-    "JSON",
-    "Math",
-    "Intl",
-    "ArrayBuffer",
-    "Atomics",
-    "Uint8Array",
-    "Int8Array",
-    "Uint16Array",
-    "Int16Array",
-    "Uint32Array",
-    "Int32Array",
-    "Float32Array",
-    "Float64Array",
-    "Uint8ClampedArray",
-    "BigUint64Array",
-    "BigInt64Array",
-    "DataView",
-    "Map",
-    "BigInt",
-    "Set",
-    "WeakMap",
-    "WeakSet",
-    "Proxy",
-    "Reflect",
-    "FinalizationRegistry",
-    "WeakRef",
-    "decodeURI",
-    "decodeURIComponent",
-    "encodeURI",
-    "encodeURIComponent",
-    "escape",
-    "unescape",
-    "eval",
-    "isFinite",
-    "isNaN",
-    "console",
-    "Option",
-    "Image",
-    "Audio",
-    "webkitURL",
-    "webkitRTCPeerConnection",
-    "webkitMediaStream",
-    "WebKitMutationObserver",
-    "WebKitCSSMatrix",
-    "XSLTProcessor",
-    "XPathResult",
-    "XPathExpression",
-    "XPathEvaluator",
-    "XMLSerializer",
-    "XMLHttpRequestUpload",
-    "XMLHttpRequestEventTarget",
-    "XMLHttpRequest",
-    "XMLDocument",
-    "WritableStreamDefaultWriter",
-    "WritableStreamDefaultController",
-    "WritableStream",
-    "Worker",
-    "WindowControlsOverlayGeometryChangeEvent",
-    "WindowControlsOverlay",
-    "Window",
-    "WheelEvent",
-    "WebSocket",
-    "WebGLVertexArrayObject",
-    "WebGLUniformLocation",
-    "WebGLTransformFeedback",
-    "WebGLTexture",
-    "WebGLSync",
-    "WebGLShaderPrecisionFormat",
-    "WebGLShader",
-    "WebGLSampler",
-    "WebGLRenderingContext",
-    "WebGLRenderbuffer",
-    "WebGLQuery",
-    "WebGLProgram",
-    "WebGLFramebuffer",
-    "WebGLContextEvent",
-    "WebGLBuffer",
-    "WebGLActiveInfo",
-    "WebGL2RenderingContext",
-    "WaveShaperNode",
-    "VisualViewport",
-    "VisibilityStateEntry",
-    "VirtualKeyboardGeometryChangeEvent",
-    "ViewTransition",
-    "VideoFrame",
-    "VideoColorSpace",
-    "ValidityState",
-    "VTTCue",
-    "UserActivation",
-    "URLSearchParams",
-    "URLPattern",
-    "URL",
-    "UIEvent",
-    "TrustedTypePolicyFactory",
-    "TrustedTypePolicy",
-    "TrustedScriptURL",
-    "TrustedScript",
-    "TrustedHTML",
-    "TreeWalker",
-    "TransitionEvent",
-    "TransformStreamDefaultController",
-    "TransformStream",
-    "TrackEvent",
-    "TouchList",
-    "TouchEvent",
-    "Touch",
-    "ToggleEvent",
-    "TimeRanges",
-    "TextTrackList",
-    "TextTrackCueList",
-    "TextTrackCue",
-    "TextTrack",
-    "TextMetrics",
-    "TextEvent",
-    "TextEncoderStream",
-    "TextEncoder",
-    "TextDecoderStream",
-    "TextDecoder",
-    "Text",
-    "TaskSignal",
-    "TaskPriorityChangeEvent",
-    "TaskController",
-    "TaskAttributionTiming",
-    "SyncManager",
-    "SubmitEvent",
-    "StyleSheetList",
-    "StyleSheet",
-    "StylePropertyMapReadOnly",
-    "StylePropertyMap",
-    "StorageEvent",
-    "Storage",
-    "StereoPannerNode",
-    "StaticRange",
-    "SourceBufferList",
-    "SourceBuffer",
-    "ShadowRoot",
-    "Selection",
-    "SecurityPolicyViolationEvent",
-    "ScriptProcessorNode",
-    "ScreenOrientation",
-    "Screen",
-    "Scheduling",
-    "Scheduler",
-    "SVGViewElement",
-    "SVGUseElement",
-    "SVGUnitTypes",
-    "SVGTransformList",
-    "SVGTransform",
-    "SVGTitleElement",
-    "SVGTextPositioningElement",
-    "SVGTextPathElement",
-    "SVGTextElement",
-    "SVGTextContentElement",
-    "SVGTSpanElement",
-    "SVGSymbolElement",
-    "SVGSwitchElement",
-    "SVGStyleElement",
-    "SVGStringList",
-    "SVGStopElement",
-    "SVGSetElement",
-    "SVGScriptElement",
-    "SVGSVGElement",
-    "SVGRectElement",
-    "SVGRect",
-    "SVGRadialGradientElement",
-    "SVGPreserveAspectRatio",
-    "SVGPolylineElement",
-    "SVGPolygonElement",
-    "SVGPointList",
-    "SVGPoint",
-    "SVGPatternElement",
-    "SVGPathElement",
-    "SVGNumberList",
-    "SVGNumber",
-    "SVGMetadataElement",
-    "SVGMatrix",
-    "SVGMaskElement",
-    "SVGMarkerElement",
-    "SVGMPathElement",
-    "SVGLinearGradientElement",
-    "SVGLineElement",
-    "SVGLengthList",
-    "SVGLength",
-    "SVGImageElement",
-    "SVGGraphicsElement",
-    "SVGGradientElement",
-    "SVGGeometryElement",
-    "SVGGElement",
-    "SVGForeignObjectElement",
-    "SVGFilterElement",
-    "SVGFETurbulenceElement",
-    "SVGFETileElement",
-    "SVGFESpotLightElement",
-    "SVGFESpecularLightingElement",
-    "SVGFEPointLightElement",
-    "SVGFEOffsetElement",
-    "SVGFEMorphologyElement",
-    "SVGFEMergeNodeElement",
-    "SVGFEMergeElement",
-    "SVGFEImageElement",
-    "SVGFEGaussianBlurElement",
-    "SVGFEFuncRElement",
-    "SVGFEFuncGElement",
-    "SVGFEFuncBElement",
-    "SVGFEFuncAElement",
-    "SVGFEFloodElement",
-    "SVGFEDropShadowElement",
-    "SVGFEDistantLightElement",
-    "SVGFEDisplacementMapElement",
-    "SVGFEDiffuseLightingElement",
-    "SVGFEConvolveMatrixElement",
-    "SVGFECompositeElement",
-    "SVGFEComponentTransferElement",
-    "SVGFEColorMatrixElement",
-    "SVGFEBlendElement",
-    "SVGEllipseElement",
-    "SVGElement",
-    "SVGDescElement",
-    "SVGDefsElement",
-    "SVGComponentTransferFunctionElement",
-    "SVGClipPathElement",
-    "SVGCircleElement",
-    "SVGAnimationElement",
-    "SVGAnimatedTransformList",
-    "SVGAnimatedString",
-    "SVGAnimatedRect",
-    "SVGAnimatedPreserveAspectRatio",
-    "SVGAnimatedNumberList",
-    "SVGAnimatedNumber",
-    "SVGAnimatedLengthList",
-    "SVGAnimatedLength",
-    "SVGAnimatedInteger",
-    "SVGAnimatedEnumeration",
-    "SVGAnimatedBoolean",
-    "SVGAnimatedAngle",
-    "SVGAnimateTransformElement",
-    "SVGAnimateMotionElement",
-    "SVGAnimateElement",
-    "SVGAngle",
-    "SVGAElement",
-    "Response",
-    "ResizeObserverSize",
-    "ResizeObserverEntry",
-    "ResizeObserver",
-    "Request",
-    "ReportingObserver",
-    "ReadableStreamDefaultReader",
-    "ReadableStreamDefaultController",
-    "ReadableStreamBYOBRequest",
-    "ReadableStreamBYOBReader",
-    "ReadableStream",
-    "ReadableByteStreamController",
-    "Range",
-    "RadioNodeList",
-    "RTCTrackEvent",
-    "RTCStatsReport",
-    "RTCSessionDescription",
-    "RTCSctpTransport",
-    "RTCRtpTransceiver",
-    "RTCRtpSender",
-    "RTCRtpReceiver",
-    "RTCPeerConnectionIceEvent",
-    "RTCPeerConnectionIceErrorEvent",
-    "RTCPeerConnection",
-    "RTCIceTransport",
-    "RTCIceCandidate",
-    "RTCErrorEvent",
-    "RTCError",
-    "RTCEncodedVideoFrame",
-    "RTCEncodedAudioFrame",
-    "RTCDtlsTransport",
-    "RTCDataChannelEvent",
-    "RTCDataChannel",
-    "RTCDTMFToneChangeEvent",
-    "RTCDTMFSender",
-    "RTCCertificate",
-    "PromiseRejectionEvent",
-    "ProgressEvent",
-    "Profiler",
-    "ProcessingInstruction",
-    "PopStateEvent",
-    "PointerEvent",
-    "PluginArray",
-    "Plugin",
-    "PictureInPictureWindow",
-    "PictureInPictureEvent",
-    "PeriodicWave",
-    "PerformanceTiming",
-    "PerformanceServerTiming",
-    "PerformanceResourceTiming",
-    "PerformancePaintTiming",
-    "PerformanceObserverEntryList",
-    "PerformanceObserver",
-    "PerformanceNavigationTiming",
-    "PerformanceNavigation",
-    "PerformanceMeasure",
-    "PerformanceMark",
-    "PerformanceLongTaskTiming",
-    "PerformanceEventTiming",
-    "PerformanceEntry",
-    "PerformanceElementTiming",
-    "Performance",
-    "Path2D",
-    "PannerNode",
-    "PageTransitionEvent",
-    "OverconstrainedError",
-    "OscillatorNode",
-    "OffscreenCanvasRenderingContext2D",
-    "OffscreenCanvas",
-    "OfflineAudioContext",
-    "OfflineAudioCompletionEvent",
-    "NodeList",
-    "NodeIterator",
-    "NodeFilter",
-    "Node",
-    "NetworkInformation",
-    "NavigatorUAData",
-    "Navigator",
-    "NavigationTransition",
-    "NavigationHistoryEntry",
-    "NavigationDestination",
-    "NavigationCurrentEntryChangeEvent",
-    "Navigation",
-    "NavigateEvent",
-    "NamedNodeMap",
-    "MutationRecord",
-    "MutationObserver",
-    "MouseEvent",
-    "MimeTypeArray",
-    "MimeType",
-    "MessagePort",
-    "MessageEvent",
-    "MessageChannel",
-    "MediaStreamTrackVideoStats",
-    "MediaStreamTrackProcessor",
-    "MediaStreamTrackGenerator",
-    "MediaStreamTrackEvent",
-    "MediaStreamTrack",
-    "MediaStreamEvent",
-    "MediaStreamAudioSourceNode",
-    "MediaStreamAudioDestinationNode",
-    "MediaStream",
-    "MediaSourceHandle",
-    "MediaSource",
-    "MediaRecorder",
-    "MediaQueryListEvent",
-    "MediaQueryList",
-    "MediaList",
-    "MediaError",
-    "MediaEncryptedEvent",
-    "MediaElementAudioSourceNode",
-    "MediaCapabilities",
-    "MathMLElement",
-    "Location",
-    "LayoutShiftAttribution",
-    "LayoutShift",
-    "LargestContentfulPaint",
-    "KeyframeEffect",
-    "KeyboardEvent",
-    "IntersectionObserverEntry",
-    "IntersectionObserver",
-    "InputEvent",
-    "InputDeviceInfo",
-    "InputDeviceCapabilities",
-    "Ink",
-    "ImageTrackList",
-    "ImageTrack",
-    "ImageData",
-    "ImageCapture",
-    "ImageBitmapRenderingContext",
-    "ImageBitmap",
-    "IdleDeadline",
-    "IIRFilterNode",
-    "IDBVersionChangeEvent",
-    "IDBTransaction",
-    "IDBRequest",
-    "IDBOpenDBRequest",
-    "IDBObjectStore",
-    "IDBKeyRange",
-    "IDBIndex",
-    "IDBFactory",
-    "IDBDatabase",
-    "IDBCursorWithValue",
-    "IDBCursor",
-    "History",
-    "HighlightRegistry",
-    "Highlight",
-    "Headers",
-    "HashChangeEvent",
-    "HTMLVideoElement",
-    "HTMLUnknownElement",
-    "HTMLUListElement",
-    "HTMLTrackElement",
-    "HTMLTitleElement",
-    "HTMLTimeElement",
-    "HTMLTextAreaElement",
-    "HTMLTemplateElement",
-    "HTMLTableSectionElement",
-    "HTMLTableRowElement",
-    "HTMLTableElement",
-    "HTMLTableColElement",
-    "HTMLTableCellElement",
-    "HTMLTableCaptionElement",
-    "HTMLStyleElement",
-    "HTMLSpanElement",
-    "HTMLSourceElement",
-    "HTMLSlotElement",
-    "HTMLSelectElement",
-    "HTMLScriptElement",
-    "HTMLQuoteElement",
-    "HTMLProgressElement",
-    "HTMLPreElement",
-    "HTMLPictureElement",
-    "HTMLParamElement",
-    "HTMLParagraphElement",
-    "HTMLOutputElement",
-    "HTMLOptionsCollection",
-    "HTMLOptionElement",
-    "HTMLOptGroupElement",
-    "HTMLObjectElement",
-    "HTMLOListElement",
-    "HTMLModElement",
-    "HTMLMeterElement",
-    "HTMLMetaElement",
-    "HTMLMenuElement",
-    "HTMLMediaElement",
-    "HTMLMarqueeElement",
-    "HTMLMapElement",
-    "HTMLLinkElement",
-    "HTMLLegendElement",
-    "HTMLLabelElement",
-    "HTMLLIElement",
-    "HTMLInputElement",
-    "HTMLImageElement",
-    "HTMLIFrameElement",
-    "HTMLHtmlElement",
-    "HTMLHeadingElement",
-    "HTMLHeadElement",
-    "HTMLHRElement",
-    "HTMLFrameSetElement",
-    "HTMLFrameElement",
-    "HTMLFormElement",
-    "HTMLFormControlsCollection",
-    "HTMLFontElement",
-    "HTMLFieldSetElement",
-    "HTMLEmbedElement",
-    "HTMLElement",
-    "HTMLDocument",
-    "HTMLDivElement",
-    "HTMLDirectoryElement",
-    "HTMLDialogElement",
-    "HTMLDetailsElement",
-    "HTMLDataListElement",
-    "HTMLDataElement",
-    "HTMLDListElement",
-    "HTMLCollection",
-    "HTMLCanvasElement",
-    "HTMLButtonElement",
-    "HTMLBodyElement",
-    "HTMLBaseElement",
-    "HTMLBRElement",
-    "HTMLAudioElement",
-    "HTMLAreaElement",
-    "HTMLAnchorElement",
-    "HTMLAllCollection",
-    "GeolocationPositionError",
-    "GeolocationPosition",
-    "GeolocationCoordinates",
-    "Geolocation",
-    "GamepadHapticActuator",
-    "GamepadEvent",
-    "GamepadButton",
-    "Gamepad",
-    "GainNode",
-    "FormDataEvent",
-    "FormData",
-    "FontFaceSetLoadEvent",
-    "FontFace",
-    "FocusEvent",
-    "FileReader",
-    "FileList",
-    "File",
-    "FeaturePolicy",
-    "External",
-    "EventTarget",
-    "EventSource",
-    "EventCounts",
-    "Event",
-    "ErrorEvent",
-    "EncodedVideoChunk",
-    "EncodedAudioChunk",
-    "ElementInternals",
-    "Element",
-    "DynamicsCompressorNode",
-    "DragEvent",
-    "DocumentType",
-    "DocumentTimeline",
-    "DocumentFragment",
-    "Document",
-    "DelegatedInkTrailPresenter",
-    "DelayNode",
-    "DecompressionStream",
-    "DataTransferItemList",
-    "DataTransferItem",
-    "DataTransfer",
-    "DOMTokenList",
-    "DOMStringMap",
-    "DOMStringList",
-    "DOMRectReadOnly",
-    "DOMRectList",
-    "DOMRect",
-    "DOMQuad",
-    "DOMPointReadOnly",
-    "DOMPoint",
-    "DOMParser",
-    "DOMMatrixReadOnly",
-    "DOMMatrix",
-    "DOMImplementation",
-    "DOMException",
-    "DOMError",
-    "CustomStateSet",
-    "CustomEvent",
-    "CustomElementRegistry",
-    "Crypto",
-    "CountQueuingStrategy",
-    "ConvolverNode",
-    "ContentVisibilityAutoStateChangeEvent",
-    "ConstantSourceNode",
-    "CompressionStream",
-    "CompositionEvent",
-    "Comment",
-    "CloseEvent",
-    "ClipboardEvent",
-    "CharacterData",
-    "ChannelSplitterNode",
-    "ChannelMergerNode",
-    "CanvasRenderingContext2D",
-    "CanvasPattern",
-    "CanvasGradient",
-    "CanvasCaptureMediaStreamTrack",
-    "CSSVariableReferenceValue",
-    "CSSUnparsedValue",
-    "CSSUnitValue",
-    "CSSTranslate",
-    "CSSTransition",
-    "CSSTransformValue",
-    "CSSTransformComponent",
-    "CSSSupportsRule",
-    "CSSStyleValue",
-    "CSSStyleSheet",
-    "CSSStyleRule",
-    "CSSStyleDeclaration",
-    "CSSStartingStyleRule",
-    "CSSSkewY",
-    "CSSSkewX",
-    "CSSSkew",
-    "CSSScale",
-    "CSSRuleList",
-    "CSSRule",
-    "CSSRotate",
-    "CSSPropertyRule",
-    "CSSPositionValue",
-    "CSSPerspective",
-    "CSSPageRule",
-    "CSSNumericValue",
-    "CSSNumericArray",
-    "CSSNamespaceRule",
-    "CSSMediaRule",
-    "CSSMatrixComponent",
-    "CSSMathValue",
-    "CSSMathSum",
-    "CSSMathProduct",
-    "CSSMathNegate",
-    "CSSMathMin",
-    "CSSMathMax",
-    "CSSMathInvert",
-    "CSSMathClamp",
-    "CSSLayerStatementRule",
-    "CSSLayerBlockRule",
-    "CSSKeywordValue",
-    "CSSKeyframesRule",
-    "CSSKeyframeRule",
-    "CSSImportRule",
-    "CSSImageValue",
-    "CSSGroupingRule",
-    "CSSFontPaletteValuesRule",
-    "CSSFontFaceRule",
-    "CSSCounterStyleRule",
-    "CSSContainerRule",
-    "CSSConditionRule",
-    "CSSAnimation",
-    "CSS",
-    "CDATASection",
-    "ByteLengthQueuingStrategy",
-    "BrowserCaptureMediaStreamTrack",
-    "BroadcastChannel",
-    "BlobEvent",
-    "Blob",
-    "BiquadFilterNode",
-    "BeforeUnloadEvent",
-    "BeforeInstallPromptEvent",
-    "BaseAudioContext",
-    "BarProp",
-    "AudioWorkletNode",
-    "AudioSinkInfo",
-    "AudioScheduledSourceNode",
-    "AudioProcessingEvent",
-    "AudioParamMap",
-    "AudioParam",
-    "AudioNode",
-    "AudioListener",
-    "AudioDestinationNode",
-    "AudioData",
-    "AudioContext",
-    "AudioBufferSourceNode",
-    "AudioBuffer",
-    "Attr",
-    "AnimationTimeline",
-    "AnimationPlaybackEvent",
-    "AnimationEvent",
-    "AnimationEffect",
-    "Animation",
-    "AnalyserNode",
-    "AbstractRange",
-    "AbortSignal",
-    "AbortController",
-    "window",
-    "self",
-    "document",
-    "name",
-    "location",
-    "customElements",
-    "history",
-    "navigation",
-    "locationbar",
-    "menubar",
-    "personalbar",
-    "scrollbars",
-    "statusbar",
-    "toolbar",
-    "status",
-    "closed",
-    "frames",
-    "length",
-    "top",
-    "opener",
-    "parent",
-    "frameElement",
-    "navigator",
-    "origin",
-    "external",
-    "screen",
-    "innerWidth",
-    "innerHeight",
-    "scrollX",
-    "pageXOffset",
-    "scrollY",
-    "pageYOffset",
-    "visualViewport",
-    "screenX",
-    "screenY",
-    "outerWidth",
-    "outerHeight",
-    "devicePixelRatio",
-    "event",
-    "clientInformation",
-    "offscreenBuffering",
-    "screenLeft",
-    "screenTop",
-    "styleMedia",
-    "onsearch",
-    "isSecureContext",
-    "trustedTypes",
-    "performance",
-    "onappinstalled",
-    "onbeforeinstallprompt",
-    "crypto",
-    "indexedDB",
-    "sessionStorage",
-    "localStorage",
-    "onbeforexrselect",
-    "onabort",
-    "onbeforeinput",
-    "onbeforematch",
-    "onbeforetoggle",
-    "onblur",
-    "oncancel",
-    "oncanplay",
-    "oncanplaythrough",
-    "onchange",
-    "onclick",
-    "onclose",
-    "oncontentvisibilityautostatechange",
-    "oncontextlost",
-    "oncontextmenu",
-    "oncontextrestored",
-    "oncuechange",
-    "ondblclick",
-    "ondrag",
-    "ondragend",
-    "ondragenter",
-    "ondragleave",
-    "ondragover",
-    "ondragstart",
-    "ondrop",
-    "ondurationchange",
-    "onemptied",
-    "onended",
-    "onerror",
-    "onfocus",
-    "onformdata",
-    "oninput",
-    "oninvalid",
-    "onkeydown",
-    "onkeypress",
-    "onkeyup",
-    "onload",
-    "onloadeddata",
-    "onloadedmetadata",
-    "onloadstart",
-    "onmousedown",
-    "onmouseenter",
-    "onmouseleave",
-    "onmousemove",
-    "onmouseout",
-    "onmouseover",
-    "onmouseup",
-    "onmousewheel",
-    "onpause",
-    "onplay",
-    "onplaying",
-    "onprogress",
-    "onratechange",
-    "onreset",
-    "onresize",
-    "onscroll",
-    "onsecuritypolicyviolation",
-    "onseeked",
-    "onseeking",
-    "onselect",
-    "onslotchange",
-    "onstalled",
-    "onsubmit",
-    "onsuspend",
-    "ontimeupdate",
-    "ontoggle",
-    "onvolumechange",
-    "onwaiting",
-    "onwebkitanimationend",
-    "onwebkitanimationiteration",
-    "onwebkitanimationstart",
-    "onwebkittransitionend",
-    "onwheel",
-    "onauxclick",
-    "ongotpointercapture",
-    "onlostpointercapture",
-    "onpointerdown",
-    "onpointermove",
-    "onpointerrawupdate",
-    "onpointerup",
-    "onpointercancel",
-    "onpointerover",
-    "onpointerout",
-    "onpointerenter",
-    "onpointerleave",
-    "onselectstart",
-    "onselectionchange",
-    "onanimationend",
-    "onanimationiteration",
-    "onanimationstart",
-    "ontransitionrun",
-    "ontransitionstart",
-    "ontransitionend",
-    "ontransitioncancel",
-    "onafterprint",
-    "onbeforeprint",
-    "onbeforeunload",
-    "onhashchange",
-    "onlanguagechange",
-    "onmessage",
-    "onmessageerror",
-    "onoffline",
-    "ononline",
-    "onpagehide",
-    "onpageshow",
-    "onpopstate",
-    "onrejectionhandled",
-    "onstorage",
-    "onunhandledrejection",
-    "onunload",
-    "crossOriginIsolated",
-    "scheduler",
-    "alert",
-    "atob",
-    "blur",
-    "btoa",
-    "cancelAnimationFrame",
-    "cancelIdleCallback",
-    "captureEvents",
-    "clearInterval",
-    "clearTimeout",
-    "close",
-    "confirm",
-    "createImageBitmap",
-    "fetch",
-    "find",
-    "focus",
-    "getComputedStyle",
-    "getSelection",
-    "matchMedia",
-    "moveBy",
-    "moveTo",
-    "open",
-    "postMessage",
-    "print",
-    "prompt",
-    "queueMicrotask",
-    "releaseEvents",
-    "reportError",
-    "requestAnimationFrame",
-    "requestIdleCallback",
-    "resizeBy",
-    "resizeTo",
-    "scroll",
-    "scrollBy",
-    "scrollTo",
-    "setInterval",
-    "setTimeout",
-    "stop",
-    "structuredClone",
-    "webkitCancelAnimationFrame",
-    "webkitRequestAnimationFrame",
-    "Iterator",
-    "chrome",
-    "WebAssembly",
-    "caches",
-    "cookieStore",
-    "ondevicemotion",
-    "ondeviceorientation",
-    "ondeviceorientationabsolute",
-    "launchQueue",
-    "documentPictureInPicture",
-    "AbsoluteOrientationSensor",
-    "Accelerometer",
-    "AudioDecoder",
-    "AudioEncoder",
-    "AudioWorklet",
-    "BatteryManager",
-    "Cache",
-    "CacheStorage",
-    "Clipboard",
-    "ClipboardItem",
-    "CookieChangeEvent",
-    "CookieStore",
-    "CookieStoreManager",
-    "Credential",
-    "CredentialsContainer",
-    "CryptoKey",
-    "DeviceMotionEvent",
-    "DeviceMotionEventAcceleration",
-    "DeviceMotionEventRotationRate",
-    "DeviceOrientationEvent",
-    "FederatedCredential",
-    "GravitySensor",
-    "Gyroscope",
-    "IdleDetector",
-    "ImageDecoder",
-    "Keyboard",
-    "KeyboardLayoutMap",
-    "LinearAccelerationSensor",
-    "Lock",
-    "LockManager",
-    "MIDIAccess",
-    "MIDIConnectionEvent",
-    "MIDIInput",
-    "MIDIInputMap",
-    "MIDIMessageEvent",
-    "MIDIOutput",
-    "MIDIOutputMap",
-    "MIDIPort",
-    "MediaDeviceInfo",
-    "MediaDevices",
-    "MediaKeyMessageEvent",
-    "MediaKeySession",
-    "MediaKeyStatusMap",
-    "MediaKeySystemAccess",
-    "MediaKeys",
-    "NavigationPreloadManager",
-    "NavigatorManagedData",
-    "OrientationSensor",
-    "PasswordCredential",
-    "RelativeOrientationSensor",
-    "ScreenDetailed",
-    "ScreenDetails",
-    "Sensor",
-    "SensorErrorEvent",
-    "ServiceWorker",
-    "ServiceWorkerContainer",
-    "ServiceWorkerRegistration",
-    "StorageManager",
-    "SubtleCrypto",
-    "VideoDecoder",
-    "VideoEncoder",
-    "VirtualKeyboard",
-    "WebTransport",
-    "WebTransportBidirectionalStream",
-    "WebTransportDatagramDuplexStream",
-    "WebTransportError",
-    "Worklet",
-    "XRDOMOverlayState",
-    "XRLayer",
-    "XRWebGLBinding",
-    "AuthenticatorAssertionResponse",
-    "AuthenticatorAttestationResponse",
-    "AuthenticatorResponse",
-    "PublicKeyCredential",
-    "Bluetooth",
-    "BluetoothCharacteristicProperties",
-    "BluetoothDevice",
-    "BluetoothRemoteGATTCharacteristic",
-    "BluetoothRemoteGATTDescriptor",
-    "BluetoothRemoteGATTServer",
-    "BluetoothRemoteGATTService",
-    "CaptureController",
-    "CharacterBoundsUpdateEvent",
-    "EditContext",
-    "TextFormat",
-    "TextFormatUpdateEvent",
-    "TextUpdateEvent",
-    "DocumentPictureInPicture",
-    "EyeDropper",
-    "FileSystemDirectoryHandle",
-    "FileSystemFileHandle",
-    "FileSystemHandle",
-    "FileSystemWritableFileStream",
-    "FontData",
-    "FragmentDirective",
-    "GPU",
-    "GPUAdapter",
-    "GPUAdapterInfo",
-    "GPUBindGroup",
-    "GPUBindGroupLayout",
-    "GPUBuffer",
-    "GPUBufferUsage",
-    "GPUCanvasContext",
-    "GPUColorWrite",
-    "GPUCommandBuffer",
-    "GPUCommandEncoder",
-    "GPUCompilationInfo",
-    "GPUCompilationMessage",
-    "GPUComputePassEncoder",
-    "GPUComputePipeline",
-    "GPUDevice",
-    "GPUDeviceLostInfo",
-    "GPUError",
-    "GPUExternalTexture",
-    "GPUInternalError",
-    "GPUMapMode",
-    "GPUOutOfMemoryError",
-    "GPUPipelineError",
-    "GPUPipelineLayout",
-    "GPUQuerySet",
-    "GPUQueue",
-    "GPURenderBundle",
-    "GPURenderBundleEncoder",
-    "GPURenderPassEncoder",
-    "GPURenderPipeline",
-    "GPUSampler",
-    "GPUShaderModule",
-    "GPUShaderStage",
-    "GPUSupportedFeatures",
-    "GPUSupportedLimits",
-    "GPUTexture",
-    "GPUTextureUsage",
-    "GPUTextureView",
-    "GPUUncapturedErrorEvent",
-    "GPUValidationError",
-    "WGSLLanguageFeatures",
-    "HID",
-    "HIDConnectionEvent",
-    "HIDDevice",
-    "HIDInputReportEvent",
-    "IdentityCredential",
-    "IdentityProvider",
-    "IdentityCredentialError",
-    "LaunchParams",
-    "LaunchQueue",
-    "MutationEvent",
-    "NavigatorLogin",
-    "OTPCredential",
-    "PaymentAddress",
-    "PaymentRequest",
-    "PaymentRequestUpdateEvent",
-    "PaymentResponse",
-    "PaymentManager",
-    "PaymentMethodChangeEvent",
-    "Presentation",
-    "PresentationAvailability",
-    "PresentationConnection",
-    "PresentationConnectionAvailableEvent",
-    "PresentationConnectionCloseEvent",
-    "PresentationConnectionList",
-    "PresentationReceiver",
-    "PresentationRequest",
-    "Serial",
-    "SerialPort",
-    "StorageBucket",
-    "StorageBucketManager",
-    "USB",
-    "USBAlternateInterface",
-    "USBConfiguration",
-    "USBConnectionEvent",
-    "USBDevice",
-    "USBEndpoint",
-    "USBInTransferResult",
-    "USBInterface",
-    "USBIsochronousInTransferPacket",
-    "USBIsochronousInTransferResult",
-    "USBIsochronousOutTransferPacket",
-    "USBIsochronousOutTransferResult",
-    "USBOutTransferResult",
-    "WakeLock",
-    "WakeLockSentinel",
-    "XRAnchor",
-    "XRAnchorSet",
-    "XRBoundedReferenceSpace",
-    "XRCPUDepthInformation",
-    "XRCamera",
-    "XRDepthInformation",
-    "XRFrame",
-    "XRHitTestResult",
-    "XRHitTestSource",
-    "XRInputSource",
-    "XRInputSourceArray",
-    "XRInputSourceEvent",
-    "XRInputSourcesChangeEvent",
-    "XRLightEstimate",
-    "XRLightProbe",
-    "XRPose",
-    "XRRay",
-    "XRReferenceSpace",
-    "XRReferenceSpaceEvent",
-    "XRRenderState",
-    "XRRigidTransform",
-    "XRSession",
-    "XRSessionEvent",
-    "XRSpace",
-    "XRSystem",
-    "XRTransientInputHitTestResult",
-    "XRTransientInputHitTestSource",
-    "XRView",
-    "XRViewerPose",
-    "XRViewport",
-    "XRWebGLDepthInformation",
-    "XRWebGLLayer",
-    "getScreenDetails",
-    "queryLocalFonts",
-    "showDirectoryPicker",
-    "showOpenFilePicker",
-    "showSaveFilePicker",
-    "originAgentCluster",
-    "onpagereveal",
-    "credentialless",
-    "speechSynthesis",
-    "onscrollend",
-    "BackgroundFetchManager",
-    "BackgroundFetchRecord",
-    "BackgroundFetchRegistration",
-    "BluetoothUUID",
-    "CSSScopeRule",
-    "CropTarget",
-    "DocumentPictureInPictureEvent",
-    "MediaMetadata",
-    "MediaSession",
-    "NavigationActivation",
-    "Notification",
-    "PageRevealEvent",
-    "PerformanceLongAnimationFrameTiming",
-    "PerformanceScriptTiming",
-    "PeriodicSyncManager",
-    "PermissionStatus",
-    "Permissions",
-    "PushManager",
-    "PushSubscription",
-    "PushSubscriptionOptions",
-    "RemotePlayback",
-    "ScrollTimeline",
-    "ViewTimeline",
-    "SharedWorker",
-    "SpeechSynthesis",
-    "SpeechSynthesisErrorEvent",
-    "SpeechSynthesisEvent",
-    "SpeechSynthesisUtterance",
-    "SpeechSynthesisVoice",
-    "VideoPlaybackQuality",
-    "webkitSpeechGrammar",
-    "webkitSpeechGrammarList",
-    "webkitSpeechRecognition",
-    "webkitSpeechRecognitionError",
-    "webkitSpeechRecognitionEvent",
-    "webkitRequestFileSystem",
-    "webkitResolveLocalFileSystemURL",
-    "mark",
-    "edenAssetsRetryRuntime",
-    "WEBPACK_ASYNC_SCRIPT_COMPLETE",
-    "EDEN_ASYNC_WEBPACK_SCRIPT_NAMES",
-    "MINI_CSS_EXTRACT_ASYNC_LINK_COMPLETE",
-    "TeaAnalyticsObject",
-    "collectEvent",
-    "Slardar",
-    "w0_0x3771f2",
-    "_$webrt_1668687510",
-    "byted_acrawler",
-    "e",
-    "U6I7dQDnPIbkh",
-    "__core-js_shared__",
-    "_sdkGlueVersionMap",
-    "_SdkGlueInit",
-    "secsdk",
-    "xss",
-    "filterCSS",
-    "filterXSS",
-    "getFilterXss",
-    "isSafeUrl",
-    "isSafeDomain",
-    "isSafeProtocol",
-    "_xssProject",
-    "UAParser",
-    "LogPluginObject",
-    "isLazyChildren",
-    "collectEventInited",
-    "ssrData",
-    "getCookie",
-    "getSSrData",
-    "getDate",
-    "liveInsertType",
-    "getLiveInsertType",
-    "safeGetParams",
-    "getCommonParams",
-    "request",
-    "preFeedRequest",
-    "__pace_route_manifest_path",
-    "__pace_f",
-    "$RC",
-    "xssNamespace",
-    "webpackChunkdouyin_web",
-    "hasShowOnce",
-    "showAccount",
-    "__createFromFetch",
-    "__pace_route_status",
-    "OPEN_AUTH_SDK",
-    "douyinPanel",
-    "version",
-    "__SLARDAR_REGISTRY__",
-    "bdms",
-    "onwheelx",
-    "regeneratorRuntime",
-    "hydrateIsland",
-    "SSR_RENDER_DATA_DOC",
-    "abTestData",
-    "__CMP",
-    "cmp",
-    "a11yConfigs",
-    "tce_cluster",
-    "isProductionEnv",
-    "updateUserInfo",
-    "spec_user_follower_uid_list",
-    "__INVISIBLE_QUERY__",
-    "setImmediate",
-    "clearImmediate",
-    "globalCtx",
-    "dir",
-    "dirxml",
-    "profile",
-    "profileEnd",
-    "clear",
-    "table",
-    "keys",
-    "values",
-    "debug",
-    "undebug",
-    "monitor",
-    "unmonitor",
-    "inspect",
-    "copy",
-    "queryObjects",
-    "$_",
-    "$0",
-    "$1",
-    "$2",
-    "$3",
-    "$4",
-    "getEventListeners",
-    "getAccessibleName",
-    "getAccessibleRole",
-    "monitorEvents",
-    "unmonitorEvents",
-    "$",
-    "$$",
-    "$x"
-]
+            "0",
+            "Object",
+            "Function",
+            "Array",
+            "Number",
+            "parseFloat",
+            "parseInt",
+            "Infinity",
+            "NaN",
+            "undefined",
+            "Boolean",
+            "String",
+            "Symbol",
+            "Date",
+            "Promise",
+            "RegExp",
+            "Error",
+            "AggregateError",
+            "EvalError",
+            "RangeError",
+            "ReferenceError",
+            "SyntaxError",
+            "TypeError",
+            "URIError",
+            "globalThis",
+            "JSON",
+            "Math",
+            "Intl",
+            "ArrayBuffer",
+            "Atomics",
+            "Uint8Array",
+            "Int8Array",
+            "Uint16Array",
+            "Int16Array",
+            "Uint32Array",
+            "Int32Array",
+            "Float32Array",
+            "Float64Array",
+            "Uint8ClampedArray",
+            "BigUint64Array",
+            "BigInt64Array",
+            "DataView",
+            "Map",
+            "BigInt",
+            "Set",
+            "WeakMap",
+            "WeakSet",
+            "Proxy",
+            "Reflect",
+            "FinalizationRegistry",
+            "WeakRef",
+            "decodeURI",
+            "decodeURIComponent",
+            "encodeURI",
+            "encodeURIComponent",
+            "escape",
+            "unescape",
+            "eval",
+            "isFinite",
+            "isNaN",
+            "console",
+            "Option",
+            "Image",
+            "Audio",
+            "webkitURL",
+            "webkitRTCPeerConnection",
+            "webkitMediaStream",
+            "WebKitMutationObserver",
+            "WebKitCSSMatrix",
+            "XSLTProcessor",
+            "XPathResult",
+            "XPathExpression",
+            "XPathEvaluator",
+            "XMLSerializer",
+            "XMLHttpRequestUpload",
+            "XMLHttpRequestEventTarget",
+            "XMLHttpRequest",
+            "XMLDocument",
+            "WritableStreamDefaultWriter",
+            "WritableStreamDefaultController",
+            "WritableStream",
+            "Worker",
+            "WindowControlsOverlayGeometryChangeEvent",
+            "WindowControlsOverlay",
+            "Window",
+            "WheelEvent",
+            "WebSocket",
+            "WebGLVertexArrayObject",
+            "WebGLUniformLocation",
+            "WebGLTransformFeedback",
+            "WebGLTexture",
+            "WebGLSync",
+            "WebGLShaderPrecisionFormat",
+            "WebGLShader",
+            "WebGLSampler",
+            "WebGLRenderingContext",
+            "WebGLRenderbuffer",
+            "WebGLQuery",
+            "WebGLProgram",
+            "WebGLObject",
+            "WebGLFramebuffer",
+            "WebGLContextEvent",
+            "WebGLBuffer",
+            "WebGLActiveInfo",
+            "WebGL2RenderingContext",
+            "WaveShaperNode",
+            "VisualViewport",
+            "VisibilityStateEntry",
+            "VirtualKeyboardGeometryChangeEvent",
+            "ViewTransition",
+            "VideoPlaybackQuality",
+            "VideoFrame",
+            "VideoColorSpace",
+            "ValidityState",
+            "VTTCue",
+            "UserActivation",
+            "URLSearchParams",
+            "URLPattern",
+            "URL",
+            "UIEvent",
+            "TrustedTypePolicyFactory",
+            "TrustedTypePolicy",
+            "TrustedScriptURL",
+            "TrustedScript",
+            "TrustedHTML",
+            "TreeWalker",
+            "TransitionEvent",
+            "TransformStreamDefaultController",
+            "TransformStream",
+            "TrackEvent",
+            "TouchList",
+            "TouchEvent",
+            "Touch",
+            "ToggleEvent",
+            "TimeRanges",
+            "TextUpdateEvent",
+            "TextTrackList",
+            "TextTrackCueList",
+            "TextTrackCue",
+            "TextTrack",
+            "TextMetrics",
+            "TextFormatUpdateEvent",
+            "TextFormat",
+            "TextEvent",
+            "TextEncoderStream",
+            "TextEncoder",
+            "TextDecoderStream",
+            "TextDecoder",
+            "Text",
+            "TaskSignal",
+            "TaskPriorityChangeEvent",
+            "TaskController",
+            "TaskAttributionTiming",
+            "SyncManager",
+            "SubmitEvent",
+            "StyleSheetList",
+            "StyleSheet",
+            "StylePropertyMapReadOnly",
+            "StylePropertyMap",
+            "StorageEvent",
+            "Storage",
+            "StereoPannerNode",
+            "StaticRange",
+            "SourceBufferList",
+            "SourceBuffer",
+            "ShadowRoot",
+            "Selection",
+            "SecurityPolicyViolationEvent",
+            "ScriptProcessorNode",
+            "ScreenOrientation",
+            "Screen",
+            "Scheduling",
+            "Scheduler",
+            "SVGViewElement",
+            "SVGUseElement",
+            "SVGUnitTypes",
+            "SVGTransformList",
+            "SVGTransform",
+            "SVGTitleElement",
+            "SVGTextPositioningElement",
+            "SVGTextPathElement",
+            "SVGTextElement",
+            "SVGTextContentElement",
+            "SVGTSpanElement",
+            "SVGSymbolElement",
+            "SVGSwitchElement",
+            "SVGStyleElement",
+            "SVGStringList",
+            "SVGStopElement",
+            "SVGSetElement",
+            "SVGScriptElement",
+            "SVGSVGElement",
+            "SVGRectElement",
+            "SVGRect",
+            "SVGRadialGradientElement",
+            "SVGPreserveAspectRatio",
+            "SVGPolylineElement",
+            "SVGPolygonElement",
+            "SVGPointList",
+            "SVGPoint",
+            "SVGPatternElement",
+            "SVGPathElement",
+            "SVGNumberList",
+            "SVGNumber",
+            "SVGMetadataElement",
+            "SVGMatrix",
+            "SVGMaskElement",
+            "SVGMarkerElement",
+            "SVGMPathElement",
+            "SVGLinearGradientElement",
+            "SVGLineElement",
+            "SVGLengthList",
+            "SVGLength",
+            "SVGImageElement",
+            "SVGGraphicsElement",
+            "SVGGradientElement",
+            "SVGGeometryElement",
+            "SVGGElement",
+            "SVGForeignObjectElement",
+            "SVGFilterElement",
+            "SVGFETurbulenceElement",
+            "SVGFETileElement",
+            "SVGFESpotLightElement",
+            "SVGFESpecularLightingElement",
+            "SVGFEPointLightElement",
+            "SVGFEOffsetElement",
+            "SVGFEMorphologyElement",
+            "SVGFEMergeNodeElement",
+            "SVGFEMergeElement",
+            "SVGFEImageElement",
+            "SVGFEGaussianBlurElement",
+            "SVGFEFuncRElement",
+            "SVGFEFuncGElement",
+            "SVGFEFuncBElement",
+            "SVGFEFuncAElement",
+            "SVGFEFloodElement",
+            "SVGFEDropShadowElement",
+            "SVGFEDistantLightElement",
+            "SVGFEDisplacementMapElement",
+            "SVGFEDiffuseLightingElement",
+            "SVGFEConvolveMatrixElement",
+            "SVGFECompositeElement",
+            "SVGFEComponentTransferElement",
+            "SVGFEColorMatrixElement",
+            "SVGFEBlendElement",
+            "SVGEllipseElement",
+            "SVGElement",
+            "SVGDescElement",
+            "SVGDefsElement",
+            "SVGComponentTransferFunctionElement",
+            "SVGClipPathElement",
+            "SVGCircleElement",
+            "SVGAnimationElement",
+            "SVGAnimatedTransformList",
+            "SVGAnimatedString",
+            "SVGAnimatedRect",
+            "SVGAnimatedPreserveAspectRatio",
+            "SVGAnimatedNumberList",
+            "SVGAnimatedNumber",
+            "SVGAnimatedLengthList",
+            "SVGAnimatedLength",
+            "SVGAnimatedInteger",
+            "SVGAnimatedEnumeration",
+            "SVGAnimatedBoolean",
+            "SVGAnimatedAngle",
+            "SVGAnimateTransformElement",
+            "SVGAnimateMotionElement",
+            "SVGAnimateElement",
+            "SVGAngle",
+            "SVGAElement",
+            "Response",
+            "ResizeObserverSize",
+            "ResizeObserverEntry",
+            "ResizeObserver",
+            "Request",
+            "ReportingObserver",
+            "ReadableStreamDefaultReader",
+            "ReadableStreamDefaultController",
+            "ReadableStreamBYOBRequest",
+            "ReadableStreamBYOBReader",
+            "ReadableStream",
+            "ReadableByteStreamController",
+            "Range",
+            "RadioNodeList",
+            "RTCTrackEvent",
+            "RTCStatsReport",
+            "RTCSessionDescription",
+            "RTCSctpTransport",
+            "RTCRtpTransceiver",
+            "RTCRtpSender",
+            "RTCRtpReceiver",
+            "RTCPeerConnectionIceEvent",
+            "RTCPeerConnectionIceErrorEvent",
+            "RTCPeerConnection",
+            "RTCIceTransport",
+            "RTCIceCandidate",
+            "RTCErrorEvent",
+            "RTCError",
+            "RTCEncodedVideoFrame",
+            "RTCEncodedAudioFrame",
+            "RTCDtlsTransport",
+            "RTCDataChannelEvent",
+            "RTCDataChannel",
+            "RTCDTMFToneChangeEvent",
+            "RTCDTMFSender",
+            "RTCCertificate",
+            "PromiseRejectionEvent",
+            "ProgressEvent",
+            "Profiler",
+            "ProcessingInstruction",
+            "PopStateEvent",
+            "PointerEvent",
+            "PluginArray",
+            "Plugin",
+            "PictureInPictureWindow",
+            "PictureInPictureEvent",
+            "PeriodicWave",
+            "PerformanceTiming",
+            "PerformanceServerTiming",
+            "PerformanceResourceTiming",
+            "PerformancePaintTiming",
+            "PerformanceObserverEntryList",
+            "PerformanceObserver",
+            "PerformanceNavigationTiming",
+            "PerformanceNavigation",
+            "PerformanceMeasure",
+            "PerformanceMark",
+            "PerformanceLongTaskTiming",
+            "PerformanceEventTiming",
+            "PerformanceEntry",
+            "PerformanceElementTiming",
+            "Performance",
+            "Path2D",
+            "PannerNode",
+            "PageTransitionEvent",
+            "OverconstrainedError",
+            "OscillatorNode",
+            "OffscreenCanvasRenderingContext2D",
+            "OffscreenCanvas",
+            "OfflineAudioContext",
+            "OfflineAudioCompletionEvent",
+            "NodeList",
+            "NodeIterator",
+            "NodeFilter",
+            "Node",
+            "NetworkInformation",
+            "NavigatorUAData",
+            "Navigator",
+            "NavigationTransition",
+            "NavigationHistoryEntry",
+            "NavigationDestination",
+            "NavigationCurrentEntryChangeEvent",
+            "Navigation",
+            "NavigateEvent",
+            "NamedNodeMap",
+            "MutationRecord",
+            "MutationObserver",
+            "MouseEvent",
+            "MimeTypeArray",
+            "MimeType",
+            "MessagePort",
+            "MessageEvent",
+            "MessageChannel",
+            "MediaStreamTrackVideoStats",
+            "MediaStreamTrackProcessor",
+            "MediaStreamTrackGenerator",
+            "MediaStreamTrackEvent",
+            "MediaStreamTrackAudioStats",
+            "MediaStreamTrack",
+            "MediaStreamEvent",
+            "MediaStreamAudioSourceNode",
+            "MediaStreamAudioDestinationNode",
+            "MediaStream",
+            "MediaSourceHandle",
+            "MediaSource",
+            "MediaRecorder",
+            "MediaQueryListEvent",
+            "MediaQueryList",
+            "MediaList",
+            "MediaError",
+            "MediaEncryptedEvent",
+            "MediaElementAudioSourceNode",
+            "MediaCapabilities",
+            "MathMLElement",
+            "Location",
+            "LayoutShiftAttribution",
+            "LayoutShift",
+            "LargestContentfulPaint",
+            "KeyframeEffect",
+            "KeyboardEvent",
+            "IntersectionObserverEntry",
+            "IntersectionObserver",
+            "InputEvent",
+            "InputDeviceInfo",
+            "InputDeviceCapabilities",
+            "Ink",
+            "ImageTrackList",
+            "ImageTrack",
+            "ImageData",
+            "ImageCapture",
+            "ImageBitmapRenderingContext",
+            "ImageBitmap",
+            "IdleDeadline",
+            "IIRFilterNode",
+            "IDBVersionChangeEvent",
+            "IDBTransaction",
+            "IDBRequest",
+            "IDBOpenDBRequest",
+            "IDBObjectStore",
+            "IDBKeyRange",
+            "IDBIndex",
+            "IDBFactory",
+            "IDBDatabase",
+            "IDBCursorWithValue",
+            "IDBCursor",
+            "History",
+            "HighlightRegistry",
+            "Highlight",
+            "Headers",
+            "HashChangeEvent",
+            "HTMLVideoElement",
+            "HTMLUnknownElement",
+            "HTMLUListElement",
+            "HTMLTrackElement",
+            "HTMLTitleElement",
+            "HTMLTimeElement",
+            "HTMLTextAreaElement",
+            "HTMLTemplateElement",
+            "HTMLTableSectionElement",
+            "HTMLTableRowElement",
+            "HTMLTableElement",
+            "HTMLTableColElement",
+            "HTMLTableCellElement",
+            "HTMLTableCaptionElement",
+            "HTMLStyleElement",
+            "HTMLSpanElement",
+            "HTMLSourceElement",
+            "HTMLSlotElement",
+            "HTMLSelectElement",
+            "HTMLScriptElement",
+            "HTMLQuoteElement",
+            "HTMLProgressElement",
+            "HTMLPreElement",
+            "HTMLPictureElement",
+            "HTMLParamElement",
+            "HTMLParagraphElement",
+            "HTMLOutputElement",
+            "HTMLOptionsCollection",
+            "HTMLOptionElement",
+            "HTMLOptGroupElement",
+            "HTMLObjectElement",
+            "HTMLOListElement",
+            "HTMLModElement",
+            "HTMLMeterElement",
+            "HTMLMetaElement",
+            "HTMLMenuElement",
+            "HTMLMediaElement",
+            "HTMLMarqueeElement",
+            "HTMLMapElement",
+            "HTMLLinkElement",
+            "HTMLLegendElement",
+            "HTMLLabelElement",
+            "HTMLLIElement",
+            "HTMLInputElement",
+            "HTMLImageElement",
+            "HTMLIFrameElement",
+            "HTMLHtmlElement",
+            "HTMLHeadingElement",
+            "HTMLHeadElement",
+            "HTMLHRElement",
+            "HTMLFrameSetElement",
+            "HTMLFrameElement",
+            "HTMLFormElement",
+            "HTMLFormControlsCollection",
+            "HTMLFontElement",
+            "HTMLFieldSetElement",
+            "HTMLEmbedElement",
+            "HTMLElement",
+            "HTMLDocument",
+            "HTMLDivElement",
+            "HTMLDirectoryElement",
+            "HTMLDialogElement",
+            "HTMLDetailsElement",
+            "HTMLDataListElement",
+            "HTMLDataElement",
+            "HTMLDListElement",
+            "HTMLCollection",
+            "HTMLCanvasElement",
+            "HTMLButtonElement",
+            "HTMLBodyElement",
+            "HTMLBaseElement",
+            "HTMLBRElement",
+            "HTMLAudioElement",
+            "HTMLAreaElement",
+            "HTMLAnchorElement",
+            "HTMLAllCollection",
+            "GeolocationPositionError",
+            "GeolocationPosition",
+            "GeolocationCoordinates",
+            "Geolocation",
+            "GamepadHapticActuator",
+            "GamepadEvent",
+            "GamepadButton",
+            "Gamepad",
+            "GainNode",
+            "FormDataEvent",
+            "FormData",
+            "FontFaceSetLoadEvent",
+            "FontFace",
+            "FocusEvent",
+            "FileReader",
+            "FileList",
+            "File",
+            "FeaturePolicy",
+            "External",
+            "EventTarget",
+            "EventSource",
+            "EventCounts",
+            "Event",
+            "ErrorEvent",
+            "EncodedVideoChunk",
+            "EncodedAudioChunk",
+            "ElementInternals",
+            "Element",
+            "EditContext",
+            "DynamicsCompressorNode",
+            "DragEvent",
+            "DocumentType",
+            "DocumentTimeline",
+            "DocumentFragment",
+            "Document",
+            "DelegatedInkTrailPresenter",
+            "DelayNode",
+            "DecompressionStream",
+            "DataTransferItemList",
+            "DataTransferItem",
+            "DataTransfer",
+            "DOMTokenList",
+            "DOMStringMap",
+            "DOMStringList",
+            "DOMRectReadOnly",
+            "DOMRectList",
+            "DOMRect",
+            "DOMQuad",
+            "DOMPointReadOnly",
+            "DOMPoint",
+            "DOMParser",
+            "DOMMatrixReadOnly",
+            "DOMMatrix",
+            "DOMImplementation",
+            "DOMException",
+            "DOMError",
+            "CustomStateSet",
+            "CustomEvent",
+            "CustomElementRegistry",
+            "Crypto",
+            "CountQueuingStrategy",
+            "ConvolverNode",
+            "ContentVisibilityAutoStateChangeEvent",
+            "ConstantSourceNode",
+            "CompressionStream",
+            "CompositionEvent",
+            "Comment",
+            "CloseEvent",
+            "ClipboardEvent",
+            "CharacterData",
+            "CharacterBoundsUpdateEvent",
+            "ChannelSplitterNode",
+            "ChannelMergerNode",
+            "CanvasRenderingContext2D",
+            "CanvasPattern",
+            "CanvasGradient",
+            "CanvasCaptureMediaStreamTrack",
+            "CSSVariableReferenceValue",
+            "CSSUnparsedValue",
+            "CSSUnitValue",
+            "CSSTranslate",
+            "CSSTransition",
+            "CSSTransformValue",
+            "CSSTransformComponent",
+            "CSSSupportsRule",
+            "CSSStyleValue",
+            "CSSStyleSheet",
+            "CSSStyleRule",
+            "CSSStyleDeclaration",
+            "CSSStartingStyleRule",
+            "CSSSkewY",
+            "CSSSkewX",
+            "CSSSkew",
+            "CSSScopeRule",
+            "CSSScale",
+            "CSSRuleList",
+            "CSSRule",
+            "CSSRotate",
+            "CSSPropertyRule",
+            "CSSPositionValue",
+            "CSSPerspective",
+            "CSSPageRule",
+            "CSSNumericValue",
+            "CSSNumericArray",
+            "CSSNamespaceRule",
+            "CSSMediaRule",
+            "CSSMatrixComponent",
+            "CSSMathValue",
+            "CSSMathSum",
+            "CSSMathProduct",
+            "CSSMathNegate",
+            "CSSMathMin",
+            "CSSMathMax",
+            "CSSMathInvert",
+            "CSSMathClamp",
+            "CSSLayerStatementRule",
+            "CSSLayerBlockRule",
+            "CSSKeywordValue",
+            "CSSKeyframesRule",
+            "CSSKeyframeRule",
+            "CSSImportRule",
+            "CSSImageValue",
+            "CSSGroupingRule",
+            "CSSFontPaletteValuesRule",
+            "CSSFontFaceRule",
+            "CSSCounterStyleRule",
+            "CSSContainerRule",
+            "CSSConditionRule",
+            "CSSAnimation",
+            "CSS",
+            "CDATASection",
+            "ByteLengthQueuingStrategy",
+            "BrowserCaptureMediaStreamTrack",
+            "BroadcastChannel",
+            "BlobEvent",
+            "Blob",
+            "BiquadFilterNode",
+            "BeforeUnloadEvent",
+            "BeforeInstallPromptEvent",
+            "BaseAudioContext",
+            "BarProp",
+            "AudioWorkletNode",
+            "AudioSinkInfo",
+            "AudioScheduledSourceNode",
+            "AudioProcessingEvent",
+            "AudioParamMap",
+            "AudioParam",
+            "AudioNode",
+            "AudioListener",
+            "AudioDestinationNode",
+            "AudioData",
+            "AudioContext",
+            "AudioBufferSourceNode",
+            "AudioBuffer",
+            "Attr",
+            "AnimationTimeline",
+            "AnimationPlaybackEvent",
+            "AnimationEvent",
+            "AnimationEffect",
+            "Animation",
+            "AnalyserNode",
+            "AbstractRange",
+            "AbortSignal",
+            "AbortController",
+            "window",
+            "self",
+            "document",
+            "name",
+            "location",
+            "customElements",
+            "history",
+            "navigation",
+            "locationbar",
+            "menubar",
+            "personalbar",
+            "scrollbars",
+            "statusbar",
+            "toolbar",
+            "status",
+            "closed",
+            "frames",
+            "length",
+            "top",
+            "opener",
+            "parent",
+            "frameElement",
+            "navigator",
+            "origin",
+            "external",
+            "screen",
+            "innerWidth",
+            "innerHeight",
+            "scrollX",
+            "pageXOffset",
+            "scrollY",
+            "pageYOffset",
+            "visualViewport",
+            "screenX",
+            "screenY",
+            "outerWidth",
+            "outerHeight",
+            "devicePixelRatio",
+            "event",
+            "clientInformation",
+            "offscreenBuffering",
+            "screenLeft",
+            "screenTop",
+            "styleMedia",
+            "onsearch",
+            "isSecureContext",
+            "trustedTypes",
+            "performance",
+            "onappinstalled",
+            "onbeforeinstallprompt",
+            "crypto",
+            "indexedDB",
+            "sessionStorage",
+            "localStorage",
+            "onbeforexrselect",
+            "onabort",
+            "onbeforeinput",
+            "onbeforematch",
+            "onbeforetoggle",
+            "onblur",
+            "oncancel",
+            "oncanplay",
+            "oncanplaythrough",
+            "onchange",
+            "onclick",
+            "onclose",
+            "oncontentvisibilityautostatechange",
+            "oncontextlost",
+            "oncontextmenu",
+            "oncontextrestored",
+            "oncuechange",
+            "ondblclick",
+            "ondrag",
+            "ondragend",
+            "ondragenter",
+            "ondragleave",
+            "ondragover",
+            "ondragstart",
+            "ondrop",
+            "ondurationchange",
+            "onemptied",
+            "onended",
+            "onerror",
+            "onfocus",
+            "onformdata",
+            "oninput",
+            "oninvalid",
+            "onkeydown",
+            "onkeypress",
+            "onkeyup",
+            "onload",
+            "onloadeddata",
+            "onloadedmetadata",
+            "onloadstart",
+            "onmousedown",
+            "onmouseenter",
+            "onmouseleave",
+            "onmousemove",
+            "onmouseout",
+            "onmouseover",
+            "onmouseup",
+            "onmousewheel",
+            "onpause",
+            "onplay",
+            "onplaying",
+            "onprogress",
+            "onratechange",
+            "onreset",
+            "onresize",
+            "onscroll",
+            "onsecuritypolicyviolation",
+            "onseeked",
+            "onseeking",
+            "onselect",
+            "onslotchange",
+            "onstalled",
+            "onsubmit",
+            "onsuspend",
+            "ontimeupdate",
+            "ontoggle",
+            "onvolumechange",
+            "onwaiting",
+            "onwebkitanimationend",
+            "onwebkitanimationiteration",
+            "onwebkitanimationstart",
+            "onwebkittransitionend",
+            "onwheel",
+            "onauxclick",
+            "ongotpointercapture",
+            "onlostpointercapture",
+            "onpointerdown",
+            "onpointermove",
+            "onpointerrawupdate",
+            "onpointerup",
+            "onpointercancel",
+            "onpointerover",
+            "onpointerout",
+            "onpointerenter",
+            "onpointerleave",
+            "onselectstart",
+            "onselectionchange",
+            "onanimationend",
+            "onanimationiteration",
+            "onanimationstart",
+            "ontransitionrun",
+            "ontransitionstart",
+            "ontransitionend",
+            "ontransitioncancel",
+            "onafterprint",
+            "onbeforeprint",
+            "onbeforeunload",
+            "onhashchange",
+            "onlanguagechange",
+            "onmessage",
+            "onmessageerror",
+            "onoffline",
+            "ononline",
+            "onpagehide",
+            "onpageshow",
+            "onpopstate",
+            "onrejectionhandled",
+            "onstorage",
+            "onunhandledrejection",
+            "onunload",
+            "crossOriginIsolated",
+            "scheduler",
+            "alert",
+            "atob",
+            "blur",
+            "btoa",
+            "cancelAnimationFrame",
+            "cancelIdleCallback",
+            "captureEvents",
+            "clearInterval",
+            "clearTimeout",
+            "close",
+            "confirm",
+            "createImageBitmap",
+            "fetch",
+            "find",
+            "focus",
+            "getComputedStyle",
+            "getSelection",
+            "matchMedia",
+            "moveBy",
+            "moveTo",
+            "open",
+            "postMessage",
+            "print",
+            "prompt",
+            "queueMicrotask",
+            "releaseEvents",
+            "reportError",
+            "requestAnimationFrame",
+            "requestIdleCallback",
+            "resizeBy",
+            "resizeTo",
+            "scroll",
+            "scrollBy",
+            "scrollTo",
+            "setInterval",
+            "setTimeout",
+            "stop",
+            "structuredClone",
+            "webkitCancelAnimationFrame",
+            "webkitRequestAnimationFrame",
+            "Iterator",
+            "chrome",
+            "WebAssembly",
+            "fence",
+            "caches",
+            "cookieStore",
+            "ondevicemotion",
+            "ondeviceorientation",
+            "ondeviceorientationabsolute",
+            "launchQueue",
+            "sharedStorage",
+            "documentPictureInPicture",
+            "AbsoluteOrientationSensor",
+            "Accelerometer",
+            "AudioDecoder",
+            "AudioEncoder",
+            "AudioWorklet",
+            "BatteryManager",
+            "Cache",
+            "CacheStorage",
+            "Clipboard",
+            "ClipboardItem",
+            "CookieChangeEvent",
+            "CookieStore",
+            "CookieStoreManager",
+            "Credential",
+            "CredentialsContainer",
+            "CryptoKey",
+            "DeviceMotionEvent",
+            "DeviceMotionEventAcceleration",
+            "DeviceMotionEventRotationRate",
+            "DeviceOrientationEvent",
+            "FederatedCredential",
+            "GPU",
+            "GPUAdapter",
+            "GPUAdapterInfo",
+            "GPUBindGroup",
+            "GPUBindGroupLayout",
+            "GPUBuffer",
+            "GPUBufferUsage",
+            "GPUCanvasContext",
+            "GPUColorWrite",
+            "GPUCommandBuffer",
+            "GPUCommandEncoder",
+            "GPUCompilationInfo",
+            "GPUCompilationMessage",
+            "GPUComputePassEncoder",
+            "GPUComputePipeline",
+            "GPUDevice",
+            "GPUDeviceLostInfo",
+            "GPUError",
+            "GPUExternalTexture",
+            "GPUInternalError",
+            "GPUMapMode",
+            "GPUOutOfMemoryError",
+            "GPUPipelineError",
+            "GPUPipelineLayout",
+            "GPUQuerySet",
+            "GPUQueue",
+            "GPURenderBundle",
+            "GPURenderBundleEncoder",
+            "GPURenderPassEncoder",
+            "GPURenderPipeline",
+            "GPUSampler",
+            "GPUShaderModule",
+            "GPUShaderStage",
+            "GPUSupportedFeatures",
+            "GPUSupportedLimits",
+            "GPUTexture",
+            "GPUTextureUsage",
+            "GPUTextureView",
+            "GPUUncapturedErrorEvent",
+            "GPUValidationError",
+            "GravitySensor",
+            "Gyroscope",
+            "IdleDetector",
+            "ImageDecoder",
+            "Keyboard",
+            "KeyboardLayoutMap",
+            "LinearAccelerationSensor",
+            "Lock",
+            "LockManager",
+            "MIDIAccess",
+            "MIDIConnectionEvent",
+            "MIDIInput",
+            "MIDIInputMap",
+            "MIDIMessageEvent",
+            "MIDIOutput",
+            "MIDIOutputMap",
+            "MIDIPort",
+            "MediaDeviceInfo",
+            "MediaDevices",
+            "MediaKeyMessageEvent",
+            "MediaKeySession",
+            "MediaKeyStatusMap",
+            "MediaKeySystemAccess",
+            "MediaKeys",
+            "NavigationPreloadManager",
+            "NavigatorManagedData",
+            "OrientationSensor",
+            "PasswordCredential",
+            "RelativeOrientationSensor",
+            "ScreenDetailed",
+            "ScreenDetails",
+            "Sensor",
+            "SensorErrorEvent",
+            "ServiceWorker",
+            "ServiceWorkerContainer",
+            "ServiceWorkerRegistration",
+            "StorageManager",
+            "SubtleCrypto",
+            "VideoDecoder",
+            "VideoEncoder",
+            "VirtualKeyboard",
+            "WGSLLanguageFeatures",
+            "WebTransport",
+            "WebTransportBidirectionalStream",
+            "WebTransportDatagramDuplexStream",
+            "WebTransportError",
+            "Worklet",
+            "XRDOMOverlayState",
+            "XRLayer",
+            "XRWebGLBinding",
+            "AuthenticatorAssertionResponse",
+            "AuthenticatorAttestationResponse",
+            "AuthenticatorResponse",
+            "PublicKeyCredential",
+            "Bluetooth",
+            "BluetoothCharacteristicProperties",
+            "BluetoothDevice",
+            "BluetoothRemoteGATTCharacteristic",
+            "BluetoothRemoteGATTDescriptor",
+            "BluetoothRemoteGATTServer",
+            "BluetoothRemoteGATTService",
+            "CaptureController",
+            "DocumentPictureInPicture",
+            "EyeDropper",
+            "Fence",
+            "FencedFrameConfig",
+            "HTMLFencedFrameElement",
+            "FileSystemDirectoryHandle",
+            "FileSystemFileHandle",
+            "FileSystemHandle",
+            "FileSystemWritableFileStream",
+            "FontData",
+            "FragmentDirective",
+            "HID",
+            "HIDConnectionEvent",
+            "HIDDevice",
+            "HIDInputReportEvent",
+            "IdentityCredential",
+            "IdentityProvider",
+            "IdentityCredentialError",
+            "LaunchParams",
+            "LaunchQueue",
+            "MutationEvent",
+            "NavigatorLogin",
+            "NotRestoredReasonDetails",
+            "NotRestoredReasons",
+            "OTPCredential",
+            "PaymentAddress",
+            "PaymentRequest",
+            "PaymentRequestUpdateEvent",
+            "PaymentResponse",
+            "PaymentManager",
+            "PaymentMethodChangeEvent",
+            "Presentation",
+            "PresentationAvailability",
+            "PresentationConnection",
+            "PresentationConnectionAvailableEvent",
+            "PresentationConnectionCloseEvent",
+            "PresentationConnectionList",
+            "PresentationReceiver",
+            "PresentationRequest",
+            "PressureObserver",
+            "PressureRecord",
+            "Serial",
+            "SerialPort",
+            "SharedStorage",
+            "SharedStorageWorklet",
+            "StorageBucket",
+            "StorageBucketManager",
+            "USB",
+            "USBAlternateInterface",
+            "USBConfiguration",
+            "USBConnectionEvent",
+            "USBDevice",
+            "USBEndpoint",
+            "USBInTransferResult",
+            "USBInterface",
+            "USBIsochronousInTransferPacket",
+            "USBIsochronousInTransferResult",
+            "USBIsochronousOutTransferPacket",
+            "USBIsochronousOutTransferResult",
+            "USBOutTransferResult",
+            "WakeLock",
+            "WakeLockSentinel",
+            "XRAnchor",
+            "XRAnchorSet",
+            "XRBoundedReferenceSpace",
+            "XRCPUDepthInformation",
+            "XRCamera",
+            "XRDepthInformation",
+            "XRFrame",
+            "XRHitTestResult",
+            "XRHitTestSource",
+            "XRInputSource",
+            "XRInputSourceArray",
+            "XRInputSourceEvent",
+            "XRInputSourcesChangeEvent",
+            "XRLightEstimate",
+            "XRLightProbe",
+            "XRPose",
+            "XRRay",
+            "XRReferenceSpace",
+            "XRReferenceSpaceEvent",
+            "XRRenderState",
+            "XRRigidTransform",
+            "XRSession",
+            "XRSessionEvent",
+            "XRSpace",
+            "XRSystem",
+            "XRTransientInputHitTestResult",
+            "XRTransientInputHitTestSource",
+            "XRView",
+            "XRViewerPose",
+            "XRViewport",
+            "XRWebGLDepthInformation",
+            "XRWebGLLayer",
+            "getScreenDetails",
+            "queryLocalFonts",
+            "showDirectoryPicker",
+            "showOpenFilePicker",
+            "showSaveFilePicker",
+            "originAgentCluster",
+            "onpageswap",
+            "onpagereveal",
+            "credentialless",
+            "speechSynthesis",
+            "onscrollend",
+            "BackgroundFetchManager",
+            "BackgroundFetchRecord",
+            "BackgroundFetchRegistration",
+            "BluetoothUUID",
+            "CSSPositionTryDescriptors",
+            "CSSPositionTryRule",
+            "CSSViewTransitionRule",
+            "CloseWatcher",
+            "CropTarget",
+            "DocumentPictureInPictureEvent",
+            "MediaMetadata",
+            "MediaSession",
+            "NavigationActivation",
+            "Notification",
+            "PageRevealEvent",
+            "PageSwapEvent",
+            "PerformanceLongAnimationFrameTiming",
+            "PerformanceScriptTiming",
+            "PeriodicSyncManager",
+            "PermissionStatus",
+            "Permissions",
+            "PushManager",
+            "PushSubscription",
+            "PushSubscriptionOptions",
+            "RemotePlayback",
+            "ScrollTimeline",
+            "ViewTimeline",
+            "SharedWorker",
+            "SpeechSynthesis",
+            "SpeechSynthesisErrorEvent",
+            "SpeechSynthesisEvent",
+            "SpeechSynthesisUtterance",
+            "SpeechSynthesisVoice",
+            "ViewTransitionTypeSet",
+            "WebSocketError",
+            "WebSocketStream",
+            "webkitSpeechGrammar",
+            "webkitSpeechGrammarList",
+            "webkitSpeechRecognition",
+            "webkitSpeechRecognitionError",
+            "webkitSpeechRecognitionEvent",
+            "webkitRequestFileSystem",
+            "webkitResolveLocalFileSystemURL",
+            "mark",
+            "edenAssetsRetryRuntime",
+            "WEBPACK_ASYNC_SCRIPT_COMPLETE",
+            "EDEN_ASYNC_WEBPACK_SCRIPT_NAMES",
+            "MINI_CSS_EXTRACT_ASYNC_LINK_COMPLETE",
+            "TeaAnalyticsObject",
+            "collectEvent",
+            "Slardar",
+            "pageLog",
+            "w0_0x3771f2",
+            "_$webrt_1668687510",
+            "byted_acrawler",
+            "e",
+            "U6I7dQDnPIbkh",
+            "__core-js_shared__",
+            "_sdkGlueVersionMap",
+            "_SdkGlueInit",
+            "secsdk",
+            "xss",
+            "filterCSS",
+            "filterXSS",
+            "getFilterXss",
+            "isSafeUrl",
+            "isSafeDomain",
+            "isSafeProtocol",
+            "_xssProject",
+            "UAParser",
+            "EXPOSE_DATA",
+            "LogPluginObject",
+            "isLazyChildren",
+            "collectEventInited",
+            "__pace_route_manifest_path",
+            "__pace_f",
+            "xssNamespace",
+            "webpackChunkdouyin_web",
+            "isUseVVC",
+            "$RC",
+            "showAccount",
+            "__pace_rsc_cache",
+            "__createFromFetch",
+            "OPEN_AUTH_SDK",
+            "douyinPanel",
+            "version",
+            "__SLARDAR_REGISTRY__",
+            "TTGCaptcha",
+            "__VC_LOG__REPORT__",
+            "_vc_intercepted_pathList",
+            "_vc_intercepted_fetch",
+            "bdms",
+            "onwheelx",
+            "serverRouteCache",
+            "regeneratorRuntime",
+            "hydrateIsland",
+            "abTestData",
+            "__CMP",
+            "cmp",
+            "a11yConfigs",
+            "tce_cluster",
+            "isProductionEnv",
+            "updateUserInfo",
+            "dir",
+            "dirxml",
+            "profile",
+            "profileEnd",
+            "clear",
+            "table",
+            "keys",
+            "values",
+            "debug",
+            "undebug",
+            "monitor",
+            "unmonitor",
+            "inspect",
+            "copy",
+            "queryObjects",
+            "$_",
+            "$0",
+            "$1",
+            "$2",
+            "$3",
+            "$4",
+            "getEventListeners",
+            "getAccessibleName",
+            "getAccessibleRole",
+            "monitorEvents",
+            "unmonitorEvents",
+            "$",
+            "$$",
+            "$x"
+        ]
     }
+    if(obj.toString().indexOf('HTMLDocument') != -1){
+        console.log('检测了 ——> Object.getOwnPropertyNames(HTMLDocument)')
+        return [
+            "length",
+            "name",
+            "arguments",
+            "caller",
+            "prototype"
+        ]
+    }
+
+    if(obj.byteLength == 2 && obj.byteOffset == 0){
+        console.log('检测了 ——> Object.getOwnPropertyNames(byteOffset),obj是含有byteOffset的一个对象')
+        return ['length', 'byteLength', 'buffer', 'byteOffset']
+    }
+
+
 
     console.log(arguments)
     debugger;
@@ -4911,11 +6289,20 @@ Object.getOwnPropertySymbols = function getOwnPropertySymbols(obj){
 
 catchvm.memory.hasOwn = Object.hasOwn
 Object.hasOwn = function hasOwn(obj, prop){
-    // console.log(arguments)
+    console.log(arguments)
     // debugger;
-    // console.log(catchvm.memory.hasOwn(obj, prop))
     return catchvm.memory.hasOwn(obj, prop)
 };catchvm.func_set_natvie(Object.hasOwn)
+
+
+catchvm.memory.hasOwnProperty = Object.hasOwnProperty
+Object.hasOwnProperty = function hasOwnProperty(prop){
+    console.log(arguments)
+    debugger;
+    return catchvm.memory.hasOwnProperty(prop)
+};catchvm.func_set_natvie(Object.hasOwnProperty)
+
+
 
 
 catchvm.memory.isExtensible = Object.isExtensible
@@ -4936,6 +6323,30 @@ Object.isSealed = function isSealed(obj){
 
 catchvm.memory.keys = Object.keys
 Object.keys = function keys(obj){
+    if(obj.toString === undefined){
+        // debugger;
+        return catchvm.memory.keys(obj)
+    }
+
+    // if(obj.RESERVED_PARAM_NAMES && obj.RESERVED_PARAM_NAMES[0] == "h5st"){
+    //     return catchvm.memory.keys(obj)
+    // }
+    // if(obj.requestAlgorithm){
+    //     return catchvm.memory.keys(obj)
+    // }
+    // if(obj.__JS_SECURITY_BUCKET_INDEX && obj.__JS_SECURITY_VERSION){
+    //     return catchvm.memory.keys(obj)
+    // }
+    // if(obj.setReadOnlyProperty && obj.isPlainObject){
+    //     return catchvm.memory.keys(obj)
+    // }
+    // if(obj.unix && obj.getRandomTimestamp){
+    //     return catchvm.memory.keys(obj)
+    // }
+
+
+
+
     if(obj.toString().indexOf('HTMLDocument') != -1){
         console.log('检测了 ——> Object.keys(HTMLDocument)')
         return []
@@ -5181,6 +6592,7 @@ Object.keys = function keys(obj){
             "fragmentDirective",
             "hasPrivateToken",
             "hasRedemptionRecord",
+            "hasUnpartitionedCookieAccess",
             "onscrollend"
         ]
     }
@@ -5204,6 +6616,474 @@ Object.keys = function keys(obj){
             "hook"
         ]
     }
+    if(obj == window){
+        console.log('检测了 ——> Object.keys(window)')
+        return [
+            "0",
+            "1",
+            "window",
+            "self",
+            "document",
+            "name",
+            "location",
+            "customElements",
+            "history",
+            "navigation",
+            "locationbar",
+            "menubar",
+            "personalbar",
+            "scrollbars",
+            "statusbar",
+            "toolbar",
+            "status",
+            "closed",
+            "frames",
+            "length",
+            "top",
+            "opener",
+            "parent",
+            "frameElement",
+            "navigator",
+            "origin",
+            "external",
+            "screen",
+            "innerWidth",
+            "innerHeight",
+            "scrollX",
+            "pageXOffset",
+            "scrollY",
+            "pageYOffset",
+            "visualViewport",
+            "screenX",
+            "screenY",
+            "outerWidth",
+            "outerHeight",
+            "devicePixelRatio",
+            "clientInformation",
+            "screenLeft",
+            "screenTop",
+            "styleMedia",
+            "onsearch",
+            "isSecureContext",
+            "trustedTypes",
+            "performance",
+            "onappinstalled",
+            "onbeforeinstallprompt",
+            "crypto",
+            "indexedDB",
+            "sessionStorage",
+            "localStorage",
+            "onbeforexrselect",
+            "onabort",
+            "onbeforeinput",
+            "onbeforematch",
+            "onbeforetoggle",
+            "onblur",
+            "oncancel",
+            "oncanplay",
+            "oncanplaythrough",
+            "onchange",
+            "onclick",
+            "onclose",
+            "oncontentvisibilityautostatechange",
+            "oncontextlost",
+            "oncontextmenu",
+            "oncontextrestored",
+            "oncuechange",
+            "ondblclick",
+            "ondrag",
+            "ondragend",
+            "ondragenter",
+            "ondragleave",
+            "ondragover",
+            "ondragstart",
+            "ondrop",
+            "ondurationchange",
+            "onemptied",
+            "onended",
+            "onerror",
+            "onfocus",
+            "onformdata",
+            "oninput",
+            "oninvalid",
+            "onkeydown",
+            "onkeypress",
+            "onkeyup",
+            "onload",
+            "onloadeddata",
+            "onloadedmetadata",
+            "onloadstart",
+            "onmousedown",
+            "onmouseenter",
+            "onmouseleave",
+            "onmousemove",
+            "onmouseout",
+            "onmouseover",
+            "onmouseup",
+            "onmousewheel",
+            "onpause",
+            "onplay",
+            "onplaying",
+            "onprogress",
+            "onratechange",
+            "onreset",
+            "onresize",
+            "onscroll",
+            "onsecuritypolicyviolation",
+            "onseeked",
+            "onseeking",
+            "onselect",
+            "onslotchange",
+            "onstalled",
+            "onsubmit",
+            "onsuspend",
+            "ontimeupdate",
+            "ontoggle",
+            "onvolumechange",
+            "onwaiting",
+            "onwebkitanimationend",
+            "onwebkitanimationiteration",
+            "onwebkitanimationstart",
+            "onwebkittransitionend",
+            "onwheel",
+            "onauxclick",
+            "ongotpointercapture",
+            "onlostpointercapture",
+            "onpointerdown",
+            "onpointermove",
+            "onpointerrawupdate",
+            "onpointerup",
+            "onpointercancel",
+            "onpointerover",
+            "onpointerout",
+            "onpointerenter",
+            "onpointerleave",
+            "onselectstart",
+            "onselectionchange",
+            "onanimationend",
+            "onanimationiteration",
+            "onanimationstart",
+            "ontransitionrun",
+            "ontransitionstart",
+            "ontransitionend",
+            "ontransitioncancel",
+            "onafterprint",
+            "onbeforeprint",
+            "onbeforeunload",
+            "onhashchange",
+            "onlanguagechange",
+            "onmessage",
+            "onmessageerror",
+            "onoffline",
+            "ononline",
+            "onpagehide",
+            "onpageshow",
+            "onpopstate",
+            "onrejectionhandled",
+            "onstorage",
+            "onunhandledrejection",
+            "onunload",
+            "crossOriginIsolated",
+            "scheduler",
+            "alert",
+            "atob",
+            "blur",
+            "btoa",
+            "cancelAnimationFrame",
+            "cancelIdleCallback",
+            "captureEvents",
+            "clearInterval",
+            "clearTimeout",
+            "close",
+            "confirm",
+            "createImageBitmap",
+            "fetch",
+            "find",
+            "focus",
+            "getComputedStyle",
+            "getSelection",
+            "matchMedia",
+            "moveBy",
+            "moveTo",
+            "open",
+            "postMessage",
+            "print",
+            "prompt",
+            "queueMicrotask",
+            "releaseEvents",
+            "reportError",
+            "requestAnimationFrame",
+            "requestIdleCallback",
+            "resizeBy",
+            "resizeTo",
+            "scroll",
+            "scrollBy",
+            "scrollTo",
+            "setInterval",
+            "setTimeout",
+            "stop",
+            "structuredClone",
+            "webkitCancelAnimationFrame",
+            "webkitRequestAnimationFrame",
+            "chrome",
+            "caches",
+            "cookieStore",
+            "ondevicemotion",
+            "ondeviceorientation",
+            "ondeviceorientationabsolute",
+            "launchQueue",
+            "documentPictureInPicture",
+            "getScreenDetails",
+            "queryLocalFonts",
+            "showDirectoryPicker",
+            "showOpenFilePicker",
+            "showSaveFilePicker",
+            "originAgentCluster",
+            "onpagereveal",
+            "credentialless",
+            "speechSynthesis",
+            "onscrollend",
+            "webkitRequestFileSystem",
+            "webkitResolveLocalFileSystemURL",
+            "staticPath",
+            "_typeof",
+            "customReport",
+            "customSendDataToAPm",
+            "ADDDATA",
+            "APMSDKVERSION",
+            "customItems",
+            "errorInfo",
+            "customReportData",
+            "randomString",
+            "performanceReport",
+            "vueErrorHandler",
+            "_ahrealxhr",
+            "__bl",
+            "$",
+            "jQuery",
+            "dcodeIO",
+            "Paho",
+            "__PROTO_FILE_VAR__",
+            "get_share_datas_from_html_inapp",
+            "getQueryString",
+            "_T",
+            "t",
+            "e",
+            "Vue",
+            "VueRouter",
+            "Vuex",
+            "bodymovin",
+            "lottie",
+            "fabric",
+            "jsdom",
+            "virtualWindow",
+            "resizeCanvasIfNeeded",
+            "copyGLTo2DDrawImage",
+            "copyGLTo2DPutImageData",
+            "webpackJsonp",
+            "BossAnalytics",
+            "upp",
+            "BrowserLogger",
+            "__hasInitBlSdk",
+            "regeneratorRuntime",
+            "setImmediate",
+            "clearImmediate",
+            "VueScrollTo",
+            "magpie",
+            "flag_offline",
+            "chatStore",
+            "VueStorage",
+            "chat",
+            "ChatWebsocket",
+            "__SVG_SPRITE__",
+            "iGeekRoot",
+            "_PAGE",
+            "systemName",
+            "default",
+            "zpFingerPrint",
+            "DEBUG",
+            "UA",
+            "isIE",
+            "isWebkit",
+            "isZpdesk",
+            "ipcRenderer",
+            "isTouch",
+            "supportsCalcVh",
+            "loadScript",
+            "loadCss",
+            "seriesLoadScripts",
+            "isVisiable",
+            "isEmptyObject",
+            "getQueryObject",
+            "getQueryArray",
+            "Cookie",
+            "cookie",
+            "localStorageInstance",
+            "getUuid",
+            "filterXss",
+            "PAGE_ACTIVITY",
+            "bindObjOutsiteClick",
+            "unbindObjOutsiteClick",
+            "KZ",
+            "explorer",
+            "b_version",
+            "version",
+            "crop",
+            "jconfirm",
+            "Jconfirm",
+            "Utemplate",
+            "Payment",
+            "Purchase",
+            "Recharge",
+            "__conversion",
+            "Salary",
+            "Auxiliary",
+            "Swiper",
+            "isEmpty",
+            "ShowLoginDialog",
+            "placeholderSupport",
+            "PlaceholderCheck",
+            "Report",
+            "Block",
+            "Upgrade",
+            "DirectAccessCard",
+            "Feedback",
+            "zpToken",
+            "SECURITY_SCRIPT_PATH",
+            "GATEWAY_TOKEN_NAME",
+            "GATEWAY_SEED_NAME",
+            "GATEWAY_SCRIPT_NAME",
+            "GATEWAY_TS_NAME",
+            "COOKIE_DOMAIN",
+            "loadGatewayScript",
+            "setGatewayCookie",
+            "isIncludeUrl",
+            "ajaxGetaway",
+            "browser",
+            "AdvantageGptOptimize",
+            "ChangeCityDialog",
+            "BossStartChat",
+            "HomeWebBanner",
+            "__Tween",
+            "__throttle",
+            "EventManger",
+            "EventBus",
+            "myCookie",
+            "getsec",
+            "Search",
+            "Filter",
+            "PositionHistory",
+            "Detail",
+            "strTranslateDom",
+            "Deliver",
+            "Validate",
+            "FormsUI",
+            "ResumeEditor",
+            "Resume",
+            "Attachment",
+            "Guide",
+            "ka_pr",
+            "LOGIN_SOURCE",
+            "LOGIN_SOURCE_URL",
+            "VERRIFYCODETYPE",
+            "CODE_JIYAN_URL",
+            "LOGIN_JIYAN_URL",
+            "ACCOUNT_JIYAN_URL",
+            "CODE_IMG_URL",
+            "LOGIN_IMG_URL",
+            "ACCOUNT_IMG_URL",
+            "CODE_ALI_URL",
+            "LOGIN_ALI_URL",
+            "ACCOUNT_ALI_URL",
+            "CODE_NETEASY_URL",
+            "LOGIN_NETEASY_URL",
+            "ACCOUNT_NETEASY_URL",
+            "VerrifyCode",
+            "filterXssStr",
+            "Sign",
+            "hunterSign",
+            "QuickSign",
+            "Settings",
+            "preview",
+            "isOldCompetitivePage",
+            "text",
+            "ItemShop",
+            "H5bridge",
+            "INTERFACE_URLS",
+            "_AMapSecurityConfig",
+            "IE",
+            "jQueryClickout",
+            "FastSign",
+            "jQuery112108476056641755338",
+            "resumeQueryBar",
+            "AnalysisResume",
+            "VerifyCodeSDK",
+            "OtherPlatformSDK",
+            "headerTools",
+            "aa"
+        ]
+    }
+    if(obj == Node.prototype){
+        console.log('检测了 ——> Object.keys(Node.prototype)')
+        return [
+            "nodeType",
+            "nodeName",
+            "baseURI",
+            "isConnected",
+            "ownerDocument",
+            "parentNode",
+            "parentElement",
+            "childNodes",
+            "firstChild",
+            "lastChild",
+            "previousSibling",
+            "nextSibling",
+            "nodeValue",
+            "textContent",
+            "ELEMENT_NODE",
+            "ATTRIBUTE_NODE",
+            "TEXT_NODE",
+            "CDATA_SECTION_NODE",
+            "ENTITY_REFERENCE_NODE",
+            "ENTITY_NODE",
+            "PROCESSING_INSTRUCTION_NODE",
+            "COMMENT_NODE",
+            "DOCUMENT_NODE",
+            "DOCUMENT_TYPE_NODE",
+            "DOCUMENT_FRAGMENT_NODE",
+            "NOTATION_NODE",
+            "DOCUMENT_POSITION_DISCONNECTED",
+            "DOCUMENT_POSITION_PRECEDING",
+            "DOCUMENT_POSITION_FOLLOWING",
+            "DOCUMENT_POSITION_CONTAINS",
+            "DOCUMENT_POSITION_CONTAINED_BY",
+            "DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC",
+            "appendChild",
+            "cloneNode",
+            "compareDocumentPosition",
+            "contains",
+            "getRootNode",
+            "hasChildNodes",
+            "insertBefore",
+            "isDefaultNamespace",
+            "isEqualNode",
+            "isSameNode",
+            "lookupNamespaceURI",
+            "lookupPrefix",
+            "normalize",
+            "removeChild",
+            "replaceChild"
+        ]
+    }
+    if(obj == EventTarget.prototype){
+        console.log('检测了 ——> Object.keys(EventTarget.prototype)')
+        return [
+            "addEventListener",
+            "dispatchEvent",
+            "removeEventListener"
+        ]
+    }
+
 
 
     console.log(arguments)
