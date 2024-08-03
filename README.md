@@ -345,6 +345,15 @@ B站直播信息流文档：https://socialsisteryi.github.io/bilibili-API-collec
 - 这里排查了一下问题，其实之前补的环境没有错误，主要是没有登入后的cookie。直接请求能够成功，但是不会返回数据
 - 环境检测不多，重点是有关window、screen和document.body的相关长度全都给补了。还有_sdkGlueVersionMap、onwheelx和xmst全都给补上去。再把一些常见的环境检测补上去，这个参数就是正确的了
 
+### 2024-08-03
+
+- 瑞数六代逆向分析
+- 网站` aHR0cHM6Ly93d3cuY3JlZGl0Y2hpbmEuZ292LmNuLw==`
+
+- 瑞数的流程不在赘述。这里我使用自己的补环境框架进行补环境，吐出来的环境全补齐了，但就是过不了。所以放弃了补环境框架，直接挂上环境代理手动补。
+- 如果只是要过瑞数六的话，环境也不用补很多。必要的location、navigator、document、window，还有其script和Meta等全部补上即可，也不用补太详细。所以这里就不给出补环境的代码了。
+- 如果不是在vm2环境下一定要注意添加`delete __filename;`和`delete __dirname;`，这里会对这个进行检测。然后不管是不是在vm2环境下一定要添加`window.ActiveXObject = undefined;`。具体可看以下文章：https://mp.weixin.qq.com/s/3NeI6AendlTlNMIrKL0G8Q
+
 # 未解决
 
 - [ ] **巨量算数中返回值加密data未进行解密**
