@@ -350,9 +350,15 @@ B站直播信息流文档：https://socialsisteryi.github.io/bilibili-API-collec
 - 瑞数六代逆向分析
 - 网站` aHR0cHM6Ly93d3cuY3JlZGl0Y2hpbmEuZ292LmNuLw==`
 
-- 瑞数的流程不在赘述。这里我使用自己的补环境框架进行补环境，吐出来的环境全补齐了，但就是过不了。所以放弃了补环境框架，直接挂上环境代理手动补。
+- 瑞数的流程不在赘述，主要注意4和5第一次请求html页面中是一个自执行函数，而6是相反的。并且代码不要格式化，这里会检测代码是否格式化。
+- 这里我使用自己的补环境框架进行补环境，吐出来的环境全补齐了，但就是过不了。所以放弃了补环境框架，直接挂上环境代理手动补。
 - 如果只是要过瑞数六的话，环境也不用补很多。必要的location、navigator、document、window，还有其script和Meta等全部补上即可，也不用补太详细。所以这里就不给出补环境的代码了。
 - 如果不是在vm2环境下一定要注意添加`delete __filename;`和`delete __dirname;`，这里会对这个进行检测。然后不管是不是在vm2环境下一定要添加`window.ActiveXObject = undefined;`。具体可看以下文章：https://mp.weixin.qq.com/s/3NeI6AendlTlNMIrKL0G8Q
+
+### 2024-08-09
+
+- 小红书新版逆向分析
+- 小红书现在把代码上了混淆，这里我还是用补环境的方法去过。整体的环境检测没什么变化。所以这次更新对于纯算来说上了难度。
 
 # 未解决
 
