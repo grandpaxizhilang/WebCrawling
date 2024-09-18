@@ -401,6 +401,16 @@ B站直播信息流文档：https://socialsisteryi.github.io/bilibili-API-collec
 
 - 这里使用ddddocr识别成功率并不高，看了一下滑块图片发现是泛白的，一定程度影响了ocr识别的效果
 
+### 2024-09-18
+
+- 腾讯滑块验证码逆向分析（未完成）
+- 网站是腾讯天御的官方网站
+- 这里并没有完成这个逆向分析。主要在collect这里卡住了，使用补环境怎么补返回的都是一个错误堆栈信息，还需要再研究研究
+
+
+
+
+
 # 未解决
 
 - [ ] **巨量算数中返回值加密data未进行解密**
@@ -408,5 +418,7 @@ B站直播信息流文档：https://socialsisteryi.github.io/bilibili-API-collec
 - [x] **抖音的a_bogus参数逆向**
 
 - [ ] **boss直聘的cookie中的__zp_token__**
+
+- [ ] **腾讯验证码collect**
 
 上述问题如有大佬能够解决，希望能够提交issue与我沟通，不胜感激!
