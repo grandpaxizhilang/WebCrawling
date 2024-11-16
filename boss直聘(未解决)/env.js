@@ -452,10 +452,10 @@ WebGLRenderingContext.prototype.getExtension = function getExtension(name){
 
 WebGLRenderingContext.prototype.getParameter = function getParameter(pname){
     if(pname == 37445){
-        return 'Google Inc. (AMD)'
+        return ''
     }
     if(pname == 37446){
-        return 'ANGLE (AMD, AMD Radeon(TM) Graphics (0x00001636) Direct3D11 vs_5_0 ps_5_0, D3D11)'
+        return ''
     }
     console.log(arguments)
     debugger;
@@ -3871,7 +3871,7 @@ Object.defineProperties(Document.prototype, {
 });
 ///////////////////////////////////////////////////////////////
 Document.prototype.URL = ''
-Document.prototype.cookie = 'passport_csrf_token=999191cea275ebdbd7aa6cac44b17e11; passport_csrf_token_default=999191cea275ebdbd7aa6cac44b17e11; ttcid=a5aeb54d0dd74b3e98c1536063ce3a2114; msToken=ze7-gfZrmR9gyYVvA0WuycUamwgcw7MwJRLyseKW46m-xDKRUFOcFfjtGcec4A0ne4sL5-NsO0Hgv77W9s5PokSE6r-If33d9f36tFKFH2sLdCNwsoe6t1JwU9lAgI4=; msToken=Anzo9K5Hte5-rKqJgUbhg1sB0KQ8lMPqa6lZlh8k4U4_uQV_aL0c0QeJROIdPBpS5gTkSoR4S4rUpiLh1agGo6CgJAkTUuVZV1zltZ4mKQtlbPnffyX1; tt_scid=B1A50MjMe2-a0H16gn3NDABiOnsjHG9j1CDGrUxxSjPHASFCdAS5OQ9ez91fBDnj0144'
+Document.prototype.cookie = ''
 Document.prototype.referrer = ''
 Document.prototype.documentElement = catchvm.proxy(catchvm.memory.HTMLElements['html']())
 Document.prototype.body = catchvm.memory.HTMLElements['body']()

@@ -1009,9 +1009,9 @@ Object.defineProperties(Document.prototype, {
     }
 });
 ///////////////////////////////////////////////////////////////
-Document.prototype.URL = 'https://www.pinduoduo.com/home/medical/'
-Document.prototype.cookie = '_nano_fp=XpmolpdYnpTbnqTal9_ZxZjOIWA6rklQOv3THMR7; api_uid=rBUUx2YGhpI4ICeayxyGAg=='
-Document.prototype.referrer = 'https://www.pinduoduo.com/'
+Document.prototype.URL = ''
+Document.prototype.cookie = ''
+Document.prototype.referrer = ''
 
 
 

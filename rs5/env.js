@@ -483,10 +483,10 @@ WebGLRenderingContext.prototype.getExtension = function getExtension(name){
 
 WebGLRenderingContext.prototype.getParameter = function getParameter(pname){
     if(pname == 37445){
-        return 'Google Inc. (AMD)'
+        return ''
     }
     if(pname == 37446){
-        return 'ANGLE (AMD, AMD Radeon(TM) Graphics (0x00001636) Direct3D11 vs_5_0 ps_5_0, D3D11)'
+        return ''
     }
     console.log(arguments)
     debugger;
@@ -3398,7 +3398,7 @@ location.port = ''
 location.hostname = ''
 location.host = ''
 location.protocol = 'http:'
-location.search = '?response_code=09cb068826d14d66917bd1a0a41c58e7&request_code=ba8d9014004e44128f1d960c4c30c3ea&response_code=c46349190b694388ad771ff254262d88&request_code=dd5e51a4a12e46d9a1010c40d372af20&response_code=416df7e74b4b4b739bcbe8f393869bed&request_code=0d62e806153446369b9e412d8401031b&response_code=606d6001a0fc4a19b20d1818b4f958b3&request_code=ce521020f89d411d869eab084ea4f8fb&response_code=10914cebbc794755b31fb51a5cfdae49&request_code=aab5413a99c244e3ab573733ac6ba889'
+location.search = ''
 location.origin = ''
 
 
@@ -4595,8 +4595,8 @@ Object.defineProperties(Document.prototype, {
 });
 ///////////////////////////////////////////////////////////////
 Document.prototype.URL = ''
-Document.prototype.cookie = 'insert_cookie=96260894'
-Document.prototype.referrer = 'https://www.dianping.com/guangzhou/ch10/o2'
+Document.prototype.cookie = ''
+Document.prototype.referrer = ''
 Document.prototype.documentElement = catchvm.proxy(catchvm.memory.HTMLElements['html']())
 Document.prototype.body = catchvm.proxy(catchvm.memory.HTMLElements['body']())
 Document.prototype.head = catchvm.proxy(catchvm.memory.HTMLElements['head']())

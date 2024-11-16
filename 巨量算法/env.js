@@ -452,10 +452,10 @@ WebGLRenderingContext.prototype.getExtension = function getExtension(name){
 
 WebGLRenderingContext.prototype.getParameter = function getParameter(pname){
     if(pname == 37445){
-        return 'Google Inc. (AMD)'
+        return ''
     }
     if(pname == 37446){
-        return 'ANGLE (AMD, AMD Radeon(TM) Graphics (0x00001636) Direct3D11 vs_5_0 ps_5_0, D3D11)'
+        return ''
     }
     console.log(arguments)
     debugger;
@@ -3272,8 +3272,8 @@ Object.defineProperties(Document.prototype, {
 });
 ///////////////////////////////////////////////////////////////
 Document.prototype.URL = ''
-Document.prototype.cookie = 'ttcid=ae34d52805404904826475a819b0d34e17'
-Document.prototype.referrer = 'https://cn.bing.com/'
+Document.prototype.cookie = ''
+Document.prototype.referrer = ''
 Document.prototype.documentElement = catchvm.proxy(catchvm.memory.HTMLElements['html']())
 Document.prototype.body = catchvm.memory.HTMLElements['body']()
 

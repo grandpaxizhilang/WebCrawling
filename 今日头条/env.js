@@ -451,10 +451,10 @@ WebGLRenderingContext.prototype.getExtension = function getExtension(name){
 
 WebGLRenderingContext.prototype.getParameter = function getParameter(pname){
     if(pname == 37445){
-        return 'Google Inc. (AMD)'
+        return ''
     }
     if(pname == 37446){
-        return 'ANGLE (AMD, AMD Radeon(TM) Graphics (0x00001636) Direct3D11 vs_5_0 ps_5_0, D3D11)'
+        return ''
     }
     console.log(arguments)
     debugger;
