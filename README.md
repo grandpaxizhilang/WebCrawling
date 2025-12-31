@@ -436,3 +436,9 @@ B站直播信息流文档：https://socialsisteryi.github.io/bilibili-API-collec
 - 这里找的是tap站点用户页面，直接把混淆的代码解混淆后放本地运行，手动把debugger替换，最后就是自己跟代码逆算法了，整体来说不算难。
 - 解混淆后的代码：decode.js     算法还原:1.js
 
+### 2026-01-01
+
+- 🎉🎉🎉新年快乐🎉🎉🎉
+- QQ音乐sign参数纯算
+- 算是比较简单的jsvmp了，上手难度不高。弄好插桩点然后分析整体算法流程就行了。
+- sign纯算: main.py
