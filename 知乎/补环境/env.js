@@ -588,7 +588,7 @@ var Location = function Location(){
 };catchvm.func_set_natvie(Location)
 Object.defineProperties(Location.prototype, {
     [Symbol.toStringTag]: {
-        value: 'Location',
+        value: 'https://www.zhihu.com/search?type=content&q=%E7%88%AC%E8%99%AB',
         configurable: true
     }
 });
@@ -597,7 +597,7 @@ location = {};
 location.__proto__ = Location.prototype;
 
 
-location.href = ''
+location.href = 'https://www.zhihu.com/search?type=content&q=%E7%88%AC%E8%99%AB'
 location.port = ''
 location.hostname = ''
 location.host = ''
@@ -632,11 +632,11 @@ Navigator.prototype.plugins = [];
 Navigator.prototype.mimeTypes = [];
 Navigator.prototype.language = "zh-CN"
 Navigator.prototype.languages = ["zh-CN","en","en-GB","en-US"];
-Navigator.prototype.userAgent = ''
+Navigator.prototype.userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0'
 Navigator.prototype.vendor = 'Google Inc.'
 Navigator.prototype.mediaDevices = {};
 Navigator.prototype.appName = 'Netscape';
-Navigator.prototype.appVersion = ''
+Navigator.prototype.appVersion = '5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Edg/123.0.0.0'
 Navigator.prototype.cookieEnabled = true;
 Navigator.prototype.deviceMemory = 8;
 Navigator.prototype.maxTouchPoints = 0;
@@ -1565,7 +1565,7 @@ Object.defineProperties(Document.prototype, {
 });
 ///////////////////////////////////////////////////////////////
 Document.prototype.URL = ''
-Document.prototype.cookie = ''
+Document.prototype.cookie = '_zap=56ff6e48-342e-4d08-a0d5-4777f51d1114; _xsrf=ce2c9bb5-6a12-4f62-a84d-4d374c71df54; d_c0=AADaFoMaPRiPTjdnD2BJK6kOpy3wxu7BBYs=|1709197451; __snaker__id=Cek7E6yMcoM54g3R; gdxidpyhxdE=eUkIUspLN%2FEHA73w1EMz%5CbG307EJOXUd67J4h3lEIwa38jAIdB0g2O7u%2Bs9Eqha2thO5kBlq09WdWgUqwUj%2BIWq8WZiZQJLlth%2FSrfgbx7zaj1I6PbGwdR2OdfUCHOQbYj%2Fy5OKmqLVt%2BCeI62E8LWBt7l2corqQLClHLh9fZg%2Bt4Duz%3A1712478122550; SESSIONID=Vi5h3YgFtCiXgUneJVQ1S3A6hYIatK3wBwt1k0INgYh; KLBRSID=cdfcc1d45d024a211bb7144f66bda2cf|1712498553|1712497253'
 Document.prototype.referrer = ''
 Document.prototype.documentElement = catchvm.memory.HTMLElements['html']()
 Document.prototype.body = catchvm.memory.HTMLElements['body']()
