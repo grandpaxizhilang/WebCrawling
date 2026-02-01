@@ -454,10 +454,10 @@ WebGLRenderingContext.prototype.getExtension = function getExtension(name){
 
 WebGLRenderingContext.prototype.getParameter = function getParameter(pname){
     if(pname == 37445){
-        return ''
+        return 'Google Inc. (AMD)'
     }
     if(pname == 37446){
-        return ''
+        return 'ANGLE (AMD, AMD Radeon(TM) Graphics (0x00001636) Direct3D11 vs_5_0 ps_5_0, D3D11)'
     }
     console.log(arguments)
     debugger;
@@ -3241,13 +3241,13 @@ location = {};
 location.__proto__ = Location.prototype;
 
 
-location.href = ''
+location.href = 'http://www.fangdi.com.cn/new_house/new_house.html'
 location.port = ''
-location.hostname = ''
-location.host = ''
+location.hostname = 'www.fangdi.com.cn'
+location.host = 'www.jd.com'
 location.protocol = 'https:'
-location.search = ''
-location.origin = ''
+location.search = '?response_code=09cb068826d14d66917bd1a0a41c58e7&request_code=ba8d9014004e44128f1d960c4c30c3ea&response_code=c46349190b694388ad771ff254262d88&request_code=dd5e51a4a12e46d9a1010c40d372af20&response_code=416df7e74b4b4b739bcbe8f393869bed&request_code=0d62e806153446369b9e412d8401031b&response_code=606d6001a0fc4a19b20d1818b4f958b3&request_code=ce521020f89d411d869eab084ea4f8fb&response_code=10914cebbc794755b31fb51a5cfdae49&request_code=aab5413a99c244e3ab573733ac6ba889'
+location.origin = 'http://www.fangdi.com.cn'
 
 
 
@@ -3286,10 +3286,10 @@ Navigator.prototype.mimeTypes = catchvm.memory.MimeTypeArray._;
 Navigator.prototype.mediaDevices = catchvm.memory.mediaDevices;
 Navigator.prototype.language = "zh-CN";
 Navigator.prototype.languages = ["zh-CN","en","en-GB","en-US"];
-Navigator.prototype.userAgent = ' '
+Navigator.prototype.userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0'
 Navigator.prototype.vendor = 'Google Inc.'
 Navigator.prototype.appName = 'Netscape';
-Navigator.prototype.appVersion = ''
+Navigator.prototype.appVersion = '5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Edg/123.0.0.0'
 Navigator.prototype.cookieEnabled = true;
 Navigator.prototype.deviceMemory = 8;
 Navigator.prototype.maxTouchPoints = 0;
@@ -4270,8 +4270,8 @@ Object.defineProperties(Document.prototype, {
 });
 ///////////////////////////////////////////////////////////////
 Document.prototype.URL = ''
-Document.prototype.cookie = ''
-Document.prototype.referrer = ''
+Document.prototype.cookie = 'MKT_CKID=1716621525229.0a30c.p5xy; UBT_VID=1716621525527.ba766vB4LEun; GUID=09031066416516426752; _RF1=223.160.230.38; _RSG=XZqvuCNNPoBqoo2Ozuxos8; _RDG=28d3d9e8a6cc2222c41dce0f3841ece293; _RGUID=bc995d73-38e7-48e1-8db2-ef8f580b2cb4; MKT_Pagesource=PC; manualclose=1; Session=smartlinkcode=U130727&smartlinklanguage=zh&SmartLinkKeyWord=&SmartLinkQuary=&SmartLinkHost=; Union=AllianceID=4902&SID=130727&OUID=&createtime=1716622026&Expires=1717226826070; ibulanguage=CN; ibulocale=zh_cn; cookiePricesDisplayed=CNY; IBU_TRANCE_LOG_P=21753324140; intl_ht1=h4=2_441585; login_type=0; login_uid=6F90D8C0A83076481A44FB774C417EAA; DUID=u=03789637FFE786FF7C36810405B8E4B9&v=0; IsNonUser=F; AHeadUserInfo=VipGrade=0&VipGradeName=%C6%D5%CD%A8%BB%E1%D4%B1&UserName=&NoReadMessageCount=0; _bfa=1.1716621525527.ba766vB4LEun.1.1716630116152.1716630711870.3.3.102003; _jzqco=%7C%7C%7C%7C%7C1.718742243.1716621525226.1716630115991.1716630712133.1716630115991.1716630712133.0.0.0.14.14'
+Document.prototype.referrer = 'https://www.dianping.com/guangzhou/ch10/o2'
 Document.prototype.documentElement = catchvm.proxy(catchvm.memory.HTMLElements['html']())
 Document.prototype.body = catchvm.proxy(catchvm.memory.HTMLElements['body']())
 Document.prototype.head = catchvm.proxy(catchvm.memory.HTMLElements['head']())
