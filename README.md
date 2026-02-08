@@ -457,7 +457,7 @@ B站直播信息流文档：https://socialsisteryi.github.io/bilibili-API-collec
 
 ### 2026-01-18
 
-- 携程  **sign** 、**w-payload-source** 、 **token** 参数逆向
+- 携程  **sign** 、**w-payload-source** 、 **token** 参数纯算
 - sign值获取很容易，先请求html页面获取有关页面信息的json数据，然后拿里面的数据拼接进行md5加密就出来了
 - w-payload-source值通过跟栈会进入一个js文件，一看就是被混淆后的代码。最好是解混淆后再分析，这里我没解混淆直接硬扣，给我人弄麻了🤡。要是图方便也可以直接补环境过
 - token值进行跟栈也就进入一个js文件中，扫一眼就是标准的vmp。直接插桩看日志，整体的加密流程：
@@ -468,3 +468,12 @@ B站直播信息流文档：https://socialsisteryi.github.io/bilibili-API-collec
   - 最后就是通过这个数组进行一些运算和charAt等操作生成单个字符，拼接后就是token值了
 - 请求流程：international_batchSearch.py
 
+### 2026-02-08
+
+- 腾讯 **w_tsfp** 参数纯算
+- 跟栈找到加密位置，发现是jsvmp并且没混淆，那就直接上手插桩打印日志然后分析，加密流程：
+  - 生成随机的32位字符串，然后拼接时间戳和url进行md5加密
+  - 构造json数据，里面有加载时间，上面生成的时间戳、md5加密值以及有关指纹的参数fingerprint，但是这个fingerprint可以置为空
+  - 最后就是对这个json转字符串后进行魔改的RC4加密
+- 实测起点小说网、马蜂窝进行请求都能正常返回数据，如果参数不对会返回202状态码
+- 请求流程：main.py
