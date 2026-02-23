@@ -453,10 +453,10 @@ WebGLRenderingContext.prototype.getExtension = function getExtension(name){
 
 WebGLRenderingContext.prototype.getParameter = function getParameter(pname){
     if(pname == 37445){
-        return ''
+        return 'Google Inc. (AMD)'
     }
     if(pname == 37446){
-        return ''
+        return 'ANGLE (AMD, AMD Radeon(TM) Graphics (0x00001636) Direct3D11 vs_5_0 ps_5_0, D3D11)'
     }
     console.log(arguments)
     debugger;
@@ -3162,10 +3162,10 @@ Navigator.prototype.mimeTypes = catchvm.memory.MimeTypeArray._;
 Navigator.prototype.mediaDevices = catchvm.memory.mediaDevices;
 Navigator.prototype.language = "zh-CN";
 Navigator.prototype.languages = ["zh-CN","en","en-GB","en-US"];
-Navigator.prototype.userAgent = ''
+Navigator.prototype.userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0'
 Navigator.prototype.vendor = 'Google Inc.'
 Navigator.prototype.appName = 'Netscape';
-Navigator.prototype.appVersion = ''
+Navigator.prototype.appVersion = '5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Edg/123.0.0.0'
 Navigator.prototype.cookieEnabled = true;
 Navigator.prototype.deviceMemory = 8;
 Navigator.prototype.maxTouchPoints = 0;
@@ -4107,8 +4107,8 @@ Object.defineProperties(Document.prototype, {
 });
 ///////////////////////////////////////////////////////////////
 Document.prototype.URL = ''
-Document.prototype.cookie = ''
-Document.prototype.referrer = ''
+Document.prototype.cookie = '_lxsdk_cuid=18f05113f90c8-05772e5fb860bf-4c657b58-144000-18f05113f90c8; _lxsdk_cuid=18f05113f90c8-05772e5fb860bf-4c657b58-144000-18f05113f90c8; _lxsdk=18f05113f90c8-05772e5fb860bf-4c657b58-144000-18f05113f90c8; WEBDFPID=v5665v9549745097zu90z4vz2zx80v1781u94885wuu97958xww3y164-2029136968009-1713776967432UCGMISKfd79fef3d01d5e9aadc18ccd4d0c95071901; _hc.v=25d77bda-2e35-2b2f-19fc-f242534b1eb6.1713777023; qruuid=62704cfd-d1e4-492a-abc3-24e7c8094838; ll=7fd06e815b796be3df069dec7836c3df; s_ViewType=10; fspop=test; cy=4; cye=guangzhou'
+Document.prototype.referrer = 'https://www.dianping.com/guangzhou/ch10/o2'
 Document.prototype.documentElement = catchvm.proxy(catchvm.memory.HTMLElements['html']())
 Document.prototype.body = catchvm.memory.HTMLElements['body']()
 
